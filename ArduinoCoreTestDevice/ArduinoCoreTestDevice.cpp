@@ -69,9 +69,7 @@ MODULE_API void DeleteDevice(MM::Device* pDevice)
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
 CArduinoCoreTestDeviceHub::CArduinoCoreTestDeviceHub() :
-   initialized_ (false),
-   switchState_ (0),
-   shutterState_ (0)
+   initialized_ (false)
 {
    portAvailable_ = false;
    invertedLogic_ = false;

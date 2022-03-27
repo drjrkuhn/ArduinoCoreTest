@@ -16,10 +16,15 @@
 #ifndef _ArduinoCoreTestDevice_H_
 #define _ArduinoCoreTestDevice_H_
 
+#define NOMINMAX
+
 #include "MMDevice.h"
 #include "DeviceBase.h"
 #include <string>
 #include <map>
+#include <deque>
+
+#include <Stream.h>
 
 //////////////////////////////////////////////////////////////////////////////
 // Error codes
@@ -34,10 +39,77 @@
 #define ERR_NO_PORT_SET 108
 #define ERR_VERSION_MISMATCH 109
 
-class ArduinoCoreTestDeviceInputMonitorThread;
+//class ArduinoCoreTestDeviceInputMonitorThread;
+
+
+
+template <class HUB>
+class HubStreamAdapter : public Stream {
+    HubStreamAdapter(HUB& hub) : hub_(hub) {}
+
+    virtual int timedRead() override {
+        // let SerialManager handle timeouts
+        return read();
+    }
+    virtual int timedPeek() override {
+        // let SerialManager handle timeouts
+        return peek();
+    }
+
+    virtual size_t write(const uint8_t byte) override {
+        return write(&byte, 1);
+    }
+
+    virtual size_t write(const uint8_t* str, size_t n) override {
+        const char* src = reinterpret_cast<const char*>(str);
+        std::vector<char> out(src, src + n);
+        return hub_.WriteToComPort(hub_.port_.c_str(), str, n) == 0 ? n : 0;
+    }
+
+    virtual int availableForWrite() override {
+        return std::numeric_limits<int>::max();
+    }
+
+    virtual int available() override {
+        getNextChar();
+        return static_cast<int>(rdbuf_.size());
+    }
+
+    virtual int read() override {
+        getNextChar();
+        if (rdbuf_.empty())
+            return -1;
+        int front = rdbuf_.front();
+        rdbuf_.pop();
+        return front;
+    }
+    virtual int peek() override {
+        getNextChar();
+        return rdbuf_.empty() ? -1 : rdbuf_.front();
+    }
+
+protected:
+    // buffer the next character because MMCore doesn't have a peek function for serial
+    void getNextChar() {
+        unsigned char buf;
+        if (rdbuf_.empty()) {
+            unsigned long read;
+            hub_.ReadFromComPort(hub_.port_.c_str(), &buf, 1, read);
+            if (read > 0) {
+                rdbuf_.push_back(buf);
+            }
+        }
+    }
+
+    std::deque<unsigned char> rdbuf_;
+    HUB& hub_;
+};
 
 class CArduinoCoreTestDeviceHub : public HubBase<CArduinoCoreTestDeviceHub>  
 {
+protected:
+    using StreamAdapter = HubStreamAdapter<CArduinoCoreTestDeviceHub>;
+    friend StreamAdapter;
 public:
    CArduinoCoreTestDeviceHub();
    ~CArduinoCoreTestDeviceHub();
@@ -69,10 +141,6 @@ public:
       return ReadFromComPort(port_.c_str(), answer, maxLen, bytesRead);
    }
    static MMThreadLock& GetLock() {return lock_;}
-   void SetShutterState(unsigned state) {shutterState_ = state;}
-   void SetSwitchState(unsigned state) {switchState_ = state;}
-   unsigned GetShutterState() {return shutterState_;}
-   unsigned GetSwitchState() {return switchState_;}
 
 private:
    int GetControllerVersion(int&);
@@ -83,8 +151,6 @@ private:
    bool timedOutputActive_;
    int version_;
    static MMThreadLock lock_;
-   unsigned switchState_;
-   unsigned shutterState_;
 };
 
 #endif //_ArduinoCoreTestDevice_H_
