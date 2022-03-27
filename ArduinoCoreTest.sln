@@ -5,6 +5,10 @@ VisualStudioVersion = 16.0.32228.343
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ArduinoCoreTestDevice", "ArduinoCoreTestDevice\ArduinoCoreTestDevice.vcxproj", "{ACEB2F36-76C8-486F-8026-0FD06CBA1BFF}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MMCore", "..\..\mmCoreAndDevices\MMCore\MMCore.vcxproj", "{36571628-728C-4ACD-A47F-503BA91C5D43}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MMDevice-SharedRuntime", "..\..\mmCoreAndDevices\MMDevice\MMDevice-SharedRuntime.vcxproj", "{B8C95F39-54BF-40A9-807B-598DF2821D55}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -15,6 +19,14 @@ Global
 		{ACEB2F36-76C8-486F-8026-0FD06CBA1BFF}.Debug|x64.Build.0 = Debug|x64
 		{ACEB2F36-76C8-486F-8026-0FD06CBA1BFF}.Release|x64.ActiveCfg = Release|x64
 		{ACEB2F36-76C8-486F-8026-0FD06CBA1BFF}.Release|x64.Build.0 = Release|x64
+		{36571628-728C-4ACD-A47F-503BA91C5D43}.Debug|x64.ActiveCfg = Debug|x64
+		{36571628-728C-4ACD-A47F-503BA91C5D43}.Debug|x64.Build.0 = Debug|x64
+		{36571628-728C-4ACD-A47F-503BA91C5D43}.Release|x64.ActiveCfg = Release|x64
+		{36571628-728C-4ACD-A47F-503BA91C5D43}.Release|x64.Build.0 = Release|x64
+		{B8C95F39-54BF-40A9-807B-598DF2821D55}.Debug|x64.ActiveCfg = Debug|x64
+		{B8C95F39-54BF-40A9-807B-598DF2821D55}.Debug|x64.Build.0 = Debug|x64
+		{B8C95F39-54BF-40A9-807B-598DF2821D55}.Release|x64.ActiveCfg = Release|x64
+		{B8C95F39-54BF-40A9-807B-598DF2821D55}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
