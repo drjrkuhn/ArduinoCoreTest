@@ -17,6 +17,7 @@
 #define _ArduinoCoreTestDevice_H_
 
 #define NOMINMAX
+#include <Stream.h>
 
 #include "MMDevice.h"
 #include "DeviceBase.h"
@@ -24,7 +25,6 @@
 #include <map>
 #include <deque>
 
-#include <Stream.h>
 
 //////////////////////////////////////////////////////////////////////////////
 // Error codes
@@ -125,14 +125,11 @@ public:
 
    // property handlers
    int OnPort(MM::PropertyBase* pPropt, MM::ActionType eAct);
-   int OnLogic(MM::PropertyBase* pPropt, MM::ActionType eAct);
    int OnVersion(MM::PropertyBase* pPropt, MM::ActionType eAct);
+   int OnTest(MM::PropertyBase* pPropt, MM::ActionType eAct);
 
    // custom interface for child devices
    bool IsPortAvailable() {return portAvailable_;}
-   bool IsLogicInverted() {return invertedLogic_;}
-   bool IsTimedOutputActive() {return timedOutputActive_;}
-   void SetTimedOutput(bool active) {timedOutputActive_ = active;}
 
    int PurgeComPortH() {return PurgeComPort(port_.c_str());}
    int WriteToComPortH(const unsigned char* command, unsigned len) {return WriteToComPort(port_.c_str(), command, len);}
@@ -147,8 +144,6 @@ private:
    std::string port_;
    bool initialized_;
    bool portAvailable_;
-   bool invertedLogic_;
-   bool timedOutputActive_;
    int version_;
    static MMThreadLock lock_;
 };

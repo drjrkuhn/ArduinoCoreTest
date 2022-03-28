@@ -16,6 +16,7 @@
 #include "ModuleInterface.h"
 #include <sstream>
 #include <cstdio>
+#include <iostream>
 
 #ifdef WIN32
    #define WIN32_LEAN_AND_MEAN
@@ -30,8 +31,11 @@ const char* g_DeviceNameArduinoCoreTestDeviceHub = "ArduinoCoreTestDevice-Hub";
 const int g_Min_MMVersion = 1;
 const int g_Max_MMVersion = 2;
 const char* g_versionProp = "Version";
-const char* g_normalLogicString = "Normal";
-const char* g_invertedLogicString = "Inverted";
+const char* g_KeywordTest = "Test";
+const char* g_TestResultsUnknown = "Not Run";
+const char* g_TestResultsRun = "Run";
+const char* g_TestResultsFailed = "Failed";
+const char* g_TestResultsPassed = "Passed";
 
 const char* g_On = "On";
 const char* g_Off = "Off";
@@ -54,7 +58,8 @@ MODULE_API MM::Device* CreateDevice(const char* deviceName)
 
    if (strcmp(deviceName, g_DeviceNameArduinoCoreTestDeviceHub) == 0)
    {
-      return new CArduinoCoreTestDeviceHub;
+       CArduinoCoreTestDeviceHub* newHub = new CArduinoCoreTestDeviceHub;
+       return newHub;
    }
    return 0;
 }
@@ -72,8 +77,6 @@ CArduinoCoreTestDeviceHub::CArduinoCoreTestDeviceHub() :
    initialized_ (false)
 {
    portAvailable_ = false;
-   invertedLogic_ = false;
-   timedOutputActive_ = false;
 
    InitializeDefaultErrorMessages();
 
@@ -88,11 +91,6 @@ CArduinoCoreTestDeviceHub::CArduinoCoreTestDeviceHub() :
    CPropertyAction* pAct = new CPropertyAction(this, &CArduinoCoreTestDeviceHub::OnPort);
    CreateProperty(MM::g_Keyword_Port, "Undefined", MM::String, false, pAct, true);
 
-   pAct = new CPropertyAction(this, &CArduinoCoreTestDeviceHub::OnLogic);
-   CreateProperty("Logic", g_invertedLogicString, MM::String, false, pAct, true);
-
-   AddAllowedValue("Logic", g_invertedLogicString);
-   AddAllowedValue("Logic", g_normalLogicString);
 }
 
 CArduinoCoreTestDeviceHub::~CArduinoCoreTestDeviceHub()
@@ -232,17 +230,20 @@ int CArduinoCoreTestDeviceHub::Initialize()
 
    // Check that we have a controller:
    PurgeComPort(port_.c_str());
-   ret = GetControllerVersion(version_);
-   if( DEVICE_OK != ret)
-      return ret;
+   //ret = GetControllerVersion(version_);
+   //if( DEVICE_OK != ret)
+   //   return ret;
 
-   if (version_ < g_Min_MMVersion || version_ > g_Max_MMVersion)
-      return ERR_VERSION_MISMATCH;
+   //if (version_ < g_Min_MMVersion || version_ > g_Max_MMVersion)
+   //   return ERR_VERSION_MISMATCH;
 
-   CPropertyAction* pAct = new CPropertyAction(this, &CArduinoCoreTestDeviceHub::OnVersion);
-   std::ostringstream sversion;
-   sversion << version_;
-   CreateProperty(g_versionProp, sversion.str().c_str(), MM::Integer, true, pAct);
+   //CPropertyAction* pAct = new CPropertyAction(this, &CArduinoCoreTestDeviceHub::OnVersion);
+   //std::ostringstream sversion;
+   //sversion << version_;
+   //CreateProperty(g_versionProp, sversion.str().c_str(), MM::Integer, true, pAct);
+
+   CPropertyAction* pAct = new CPropertyAction(this, &CArduinoCoreTestDeviceHub::OnTest);
+   CreateProperty(g_KeywordTest, g_TestResultsUnknown, MM::String, false, pAct, true);
 
    ret = UpdateStatus();
    if (ret != DEVICE_OK)
@@ -310,22 +311,44 @@ int CArduinoCoreTestDeviceHub::OnVersion(MM::PropertyBase* pProp, MM::ActionType
    return DEVICE_OK;
 }
 
-int CArduinoCoreTestDeviceHub::OnLogic(MM::PropertyBase* pProp, MM::ActionType pAct)
-{
-   if (pAct == MM::BeforeGet)
-   {
-      if (invertedLogic_)
-         pProp->Set(g_invertedLogicString);
-      else
-         pProp->Set(g_normalLogicString);
-   } else if (pAct == MM::AfterSet)
-   {
-      std::string logic;
-      pProp->Get(logic);
-      if (logic.compare(g_invertedLogicString)==0)
-         invertedLogic_ = true;
-      else invertedLogic_ = false;
-   }
-   return DEVICE_OK;
-}
 
+
+int CArduinoCoreTestDeviceHub::OnTest(MM::PropertyBase* pProp, MM::ActionType pAct)
+{
+    using namespace std;
+    stringstream msg;
+    if (pAct == MM::BeforeGet)
+    {
+        msg.clear();
+        msg << "OnTest MM::BeforeGet";
+        LogMessage(msg.str());
+        //if (invertedLogic_)
+        //    pProp->Set(g_invertedLogicString);
+        //else
+        //    pProp->Set(g_normalLogicString);
+    }
+    else if (pAct == MM::AfterSet)
+    {
+        msg.clear();
+        string val;
+        pProp->Get(val);
+        msg << "OnTest MM::AfterSet, Prop: " << val;
+        LogMessage(msg.str());
+
+        bool testPassed = false;
+        if (val == g_TestResultsRun) {
+            cout << "=== TESTING ===" << endl;
+            cout << "=== TESTING DONE ===" << endl;
+            testPassed = true;
+        }
+
+        pProp->Set(testPassed ? g_TestResultsPassed : g_TestResultsFailed);
+
+        //std::string logic;
+        //pProp->Get(logic);
+        //if (logic.compare(g_invertedLogicString) == 0)
+        //    invertedLogic_ = true;
+        //else invertedLogic_ = false;
+    }
+    return DEVICE_OK;
+}

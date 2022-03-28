@@ -1,9 +1,13 @@
 // DeviceUnitTests.cpp : This file contains the 'main' function. Program execution begins and ends there.
 //
 
+#define NOMINMAX
+#include <Stream.h>
+
 #include <MMCore.h>
 #include <MMDevice.h>
 #include "DeviceBase.h"
+#include "ArduinoCoreTestDevice.h"
 #include <iostream>
 #include <string>
 #include <vector>
@@ -61,7 +65,7 @@ int main()
 
 		// set the serial port
 		core.setProperty(hubLabel.c_str(), "Port", portLabel.c_str());
-
+		//CArduinoCoreTestDeviceHub* hub = CArduinoCoreTestDeviceHub::getInstance();
 
 		cout << "Initializing..." << endl;
 		core.initializeAllDevices();
@@ -74,19 +78,11 @@ int main()
 			cout << props[i] << " (" << ::getPropertyTypeVerbose(core.getPropertyType(hubLabel.c_str(), props[i].c_str())) << ") = "
 				<< core.getProperty(hubLabel.c_str(), props[i].c_str()) << endl;
 		}
+		cout << endl;
 
-		// additional testing
-		MM::DeviceType type = core.getDeviceType(hubLabel.c_str());
-
-		if (type == MM::CameraDevice) {
-			cout << "Testing camera specific functions:" << endl;
-			core.setExposure(10.0);
-			core.snapImage();
-			core.getImage();
-		}
-		else if (type == MM::StateDevice) {
-			cout << "Testing State Device specific functions:" << endl;
-		}
+		// Run unit tests
+		core.setProperty(hubLabel.c_str(), "Test", "Run");
+		cout << "Results: " << core.getProperty(hubLabel.c_str(), "Test") << endl << endl;
 
 		// unload the device
 		// -----------------
