@@ -27,17 +27,17 @@ CompactNamespaces: true
 
 BreakBeforeBraces: Custom
 BraceWrapping:
-  AfterStruct: true
-  AfterClass: true
-  AfterControlStatement: true
-  AfterNamespace: true
-  AfterFunction: true
-  AfterUnion: true
+  AfterStruct: false
+  AfterClass: false
+  AfterControlStatement: false
+  AfterNamespace: false
+  AfterFunction: false
+  AfterUnion: false
   AfterExternBlock: false
   AfterEnum: false
-  BeforeElse: true
+  BeforeElse: false
   SplitEmptyFunction: false
-  SplitEmptyRecord: true
-  SplitEmptyNamespace: true
+  SplitEmptyRecord: false
+  SplitEmptyNamespace: false
 
 IncludeBlocks: Merge

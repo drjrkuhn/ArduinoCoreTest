@@ -45,16 +45,8 @@
 
 template <class HUB>
 class HubStreamAdapter : public Stream {
-    HubStreamAdapter(HUB& hub) : hub_(hub) {}
-
-    virtual int timedRead() override {
-        // let SerialManager handle timeouts
-        return read();
-    }
-    virtual int timedPeek() override {
-        // let SerialManager handle timeouts
-        return peek();
-    }
+public:
+    HubStreamAdapter(HUB* hub) : hub_(hub) {}
 
     virtual size_t write(const uint8_t byte) override {
         return write(&byte, 1);
@@ -63,7 +55,8 @@ class HubStreamAdapter : public Stream {
     virtual size_t write(const uint8_t* str, size_t n) override {
         const char* src = reinterpret_cast<const char*>(str);
         std::vector<char> out(src, src + n);
-        return hub_.WriteToComPort(hub_.port_.c_str(), str, n) == 0 ? n : 0;
+        int err = hub_->WriteToComPort(hub_->port_.c_str(), str, static_cast<unsigned int>(n));
+        return (err == DEVICE_OK) ? n : 0;
     }
 
     virtual int availableForWrite() override {
@@ -80,7 +73,7 @@ class HubStreamAdapter : public Stream {
         if (rdbuf_.empty())
             return -1;
         int front = rdbuf_.front();
-        rdbuf_.pop();
+        rdbuf_.pop_front();
         return front;
     }
     virtual int peek() override {
@@ -88,21 +81,31 @@ class HubStreamAdapter : public Stream {
         return rdbuf_.empty() ? -1 : rdbuf_.front();
     }
 
+    virtual void clear()  {
+        hub_->PurgeComPort(hub_->port_.c_str());
+    }
+
+
+
 protected:
     // buffer the next character because MMCore doesn't have a peek function for serial
     void getNextChar() {
-        unsigned char buf;
         if (rdbuf_.empty()) {
-            unsigned long read;
-            hub_.ReadFromComPort(hub_.port_.c_str(), &buf, 1, read);
-            if (read > 0) {
-                rdbuf_.push_back(buf);
-            }
+            unsigned long timeout = arduino::millis() + 1000;
+            do {
+                unsigned char buf;
+                unsigned long read;
+                int err = hub_->ReadFromComPort(hub_->port_.c_str(), &buf, 1, read);
+                if (err == DEVICE_OK && read > 0) {
+                    rdbuf_.push_back(buf);
+                    return;
+                }
+            } while (arduino::millis() < timeout);
         }
     }
 
     std::deque<unsigned char> rdbuf_;
-    HUB& hub_;
+    HUB* hub_;
 };
 
 class CArduinoCoreTestDeviceHub : public HubBase<CArduinoCoreTestDeviceHub>  
@@ -131,12 +134,12 @@ public:
    // custom interface for child devices
    bool IsPortAvailable() {return portAvailable_;}
 
-   int PurgeComPortH() {return PurgeComPort(port_.c_str());}
-   int WriteToComPortH(const unsigned char* command, unsigned len) {return WriteToComPort(port_.c_str(), command, len);}
-   int ReadFromComPortH(unsigned char* answer, unsigned maxLen, unsigned long& bytesRead)
-   {
-      return ReadFromComPort(port_.c_str(), answer, maxLen, bytesRead);
-   }
+   //int PurgeComPortH() {return PurgeComPort(port_.c_str());}
+   //int WriteToComPortH(const unsigned char* command, unsigned len) {return WriteToComPort(port_.c_str(), command, len);}
+   //int ReadFromComPortH(unsigned char* answer, unsigned maxLen, unsigned long& bytesRead)
+   //{
+   //   return ReadFromComPort(port_.c_str(), answer, maxLen, bytesRead);
+   //}
    static MMThreadLock& GetLock() {return lock_;}
 
 private:
@@ -146,6 +149,7 @@ private:
    bool portAvailable_;
    int version_;
    static MMThreadLock lock_;
+   StreamAdapter serial_;
 };
 
 #endif //_ArduinoCoreTestDevice_H_

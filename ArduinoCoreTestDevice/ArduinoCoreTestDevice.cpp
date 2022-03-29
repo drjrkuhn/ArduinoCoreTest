@@ -12,6 +12,7 @@
 //
 //
 
+#include <ArduinoJson.hpp>
 #include "ArduinoCoreTestDevice.h"
 #include "ModuleInterface.h"
 #include <sstream>
@@ -23,6 +24,8 @@
    #include <windows.h>
 #endif
 #include "FixSnprintf.h"
+
+namespace json = ARDUINOJSON_NAMESPACE;
 
 const char* g_DeviceNameArduinoCoreTestDeviceHub = "ArduinoCoreTestDevice-Hub";
 
@@ -74,7 +77,7 @@ MODULE_API void DeleteDevice(MM::Device* pDevice)
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
 CArduinoCoreTestDeviceHub::CArduinoCoreTestDeviceHub() :
-   initialized_ (false)
+   initialized_ (false), serial_(this)
 {
    portAvailable_ = false;
 
@@ -113,39 +116,36 @@ bool CArduinoCoreTestDeviceHub::Busy()
 // 2. purge the port
 int CArduinoCoreTestDeviceHub::GetControllerVersion(int& version)
 {
-   int ret = DEVICE_OK;
-   unsigned char command[1];
-   command[0] = 30;
    version = 0;
 
-   ret = WriteToComPort(port_.c_str(), (const unsigned char*) command, 1);
-   if (ret != DEVICE_OK)
-      return ret;
+   try {
 
-   std::string answer;
-   ret = GetSerialAnswer(port_.c_str(), "\r\n", answer);
-   if (ret != DEVICE_OK)
-      return ret;
+       serial_.clear();
+       json::StaticJsonDocument<200> command;
+       command.add("Version");
+       serializeJson(command, serial_);
 
-   if (answer != "MM-Ard")
-      return ERR_BOARD_NOT_FOUND;
+       json::StaticJsonDocument<200> reply;
+       json::DeserializationError error;
+       error = deserializeJson(reply, serial_);
+       // Test if parsing succeeds.
+       if (error) {
+           LogMessage("deserializeJson() failed: ", error.c_str());
+           return ERR_BOARD_NOT_FOUND;
+       }
 
-   // Check version number of the ArduinoCoreTestDevice
-   command[0] = 31;
-   ret = WriteToComPort(port_.c_str(), (const unsigned char*) command, 1);
-   if (ret != DEVICE_OK)
-      return ret;
-
-   std::string ans;
-   ret = GetSerialAnswer(port_.c_str(), "\r\n", ans);
-   if (ret != DEVICE_OK) {
-         return ret;
+       bool found = reply[0] == "MM-Ard";//serial_.findUntil("MM-Ard", "\r\n");
+       if (!found) {
+           return ERR_BOARD_NOT_FOUND;
+       }
+       version = reply[1];
+       return DEVICE_OK;
    }
-   std::istringstream is(ans);
-   is >> version;
-
-   return ret;
-
+   catch (...)
+   {
+       LogMessage("Exception in GetControllerVersion!", false);
+   }
+   return ERR_BOARD_NOT_FOUND;
 }
 
 bool CArduinoCoreTestDeviceHub::SupportsDeviceDetection(void)
@@ -230,19 +230,19 @@ int CArduinoCoreTestDeviceHub::Initialize()
 
    // Check that we have a controller:
    PurgeComPort(port_.c_str());
-   //ret = GetControllerVersion(version_);
-   //if( DEVICE_OK != ret)
-   //   return ret;
+   ret = GetControllerVersion(version_);
+   if( DEVICE_OK != ret)
+      return ret;
 
-   //if (version_ < g_Min_MMVersion || version_ > g_Max_MMVersion)
-   //   return ERR_VERSION_MISMATCH;
+   if (version_ < g_Min_MMVersion || version_ > g_Max_MMVersion)
+      return ERR_VERSION_MISMATCH;
 
-   //CPropertyAction* pAct = new CPropertyAction(this, &CArduinoCoreTestDeviceHub::OnVersion);
-   //std::ostringstream sversion;
-   //sversion << version_;
-   //CreateProperty(g_versionProp, sversion.str().c_str(), MM::Integer, true, pAct);
+   CPropertyAction* pAct = new CPropertyAction(this, &CArduinoCoreTestDeviceHub::OnVersion);
+   std::ostringstream sversion;
+   sversion << version_;
+   CreateProperty(g_versionProp, sversion.str().c_str(), MM::Integer, true, pAct);
 
-   CPropertyAction* pAct = new CPropertyAction(this, &CArduinoCoreTestDeviceHub::OnTest);
+   pAct = new CPropertyAction(this, &CArduinoCoreTestDeviceHub::OnTest);
    CreateProperty(g_KeywordTest, g_TestResultsUnknown, MM::String, false, pAct, true);
 
    ret = UpdateStatus();
@@ -339,7 +339,7 @@ int CArduinoCoreTestDeviceHub::OnTest(MM::PropertyBase* pProp, MM::ActionType pA
         if (val == g_TestResultsRun) {
             cout << "=== TESTING ===" << endl;
             cout << "=== TESTING DONE ===" << endl;
-            testPassed = true;
+            testPassed = false;
         }
 
         pProp->Set(testPassed ? g_TestResultsPassed : g_TestResultsFailed);
