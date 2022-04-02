@@ -13,6 +13,7 @@
 //
 
 #include <ArduinoJson.hpp>
+#include <slipinplace.h>
 #include "ArduinoCoreTestDevice.h"
 #include "ModuleInterface.h"
 #include <sstream>
@@ -80,6 +81,7 @@ CArduinoCoreTestDeviceHub::CArduinoCoreTestDeviceHub() :
    initialized_ (false), serial_(this)
 {
    portAvailable_ = false;
+   serial_.setTimeout(5000);
 
    InitializeDefaultErrorMessages();
 

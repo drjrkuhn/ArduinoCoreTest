@@ -91,7 +91,7 @@ protected:
     // buffer the next character because MMCore doesn't have a peek function for serial
     void getNextChar() {
         if (rdbuf_.empty()) {
-            unsigned long timeout = arduino::millis() + 1000;
+            unsigned long timeout = arduino::millis() + getTimeout();
             do {
                 unsigned char buf;
                 unsigned long read;

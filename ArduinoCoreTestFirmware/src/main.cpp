@@ -1,5 +1,8 @@
 #include "Arduino.h"
+
+#define ARDUINOJSON_ENABLE_ARDUINO_STREAM 1
 #include <ArduinoJson.h>
+#include <slipinplace.h>
 
 #if defined(USB_DUAL_SERIAL) || defined(USB_TRIPLE_SERIAL)
 #    define log_begin()             \
@@ -26,6 +29,7 @@
 
 void setup() {
     Serial.begin(9600);
+    Serial.setTimeout(5000); // longer timeout on virtual machine
     log_begin();
 
     while (!Serial) {
@@ -45,11 +49,24 @@ void setup() {
 
 int loopnum = 0;
 
+const size_t pktbuf_size = 512;
+uint8_t pktbuf[pktbuf_size];
+
+using encoder = slip::encoder<uint8_t>;
+using decoder = slip::decoder<uint8_t>;
+
 void loop() {
     StaticJsonDocument<200> doc;
 
     if (Serial.available() > 0) {
-        DeserializationError error = deserializeJson(doc, Serial);
+        size_t nreceived = Serial.readBytesUntil(encoder::end_code(), pktbuf, pktbuf_size);
+        size_t nread = decoder::decode(pktbuf, pktbuf_size, pktbuf, nreceived);
+        String str;
+        str.reserve(nread+1);
+        str.copy((char*)pktbuf, nread);
+        log_print("GOT: ");
+        log_println(str);
+        DeserializationError error = deserializeJson(doc, (char*)pktbuf, nread);
         // Test if parsing succeeds.
         if (error) {
             log_print(F("deserializeJson() failed: "));
@@ -64,7 +81,9 @@ void loop() {
                 StaticJsonDocument<100> reply;
                 reply.add("MM-Ard");
                 reply.add(1);
-                serializeJson(reply, Serial);
+                size_t size = serializeJson(reply, pktbuf, pktbuf_size);
+                size_t esize = encoder::encode(pktbuf, pktbuf_size, pktbuf, size);
+                Serial.write(pktbuf, esize);
                 log_json(reply);
             }
         }
