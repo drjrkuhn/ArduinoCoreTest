@@ -6,6 +6,7 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ArduinoCoreTestDevice", "ArduinoCoreTestDevice\ArduinoCoreTestDevice.vcxproj", "{ACEB2F36-76C8-486F-8026-0FD06CBA1BFF}"
 	ProjectSection(ProjectDependencies) = postProject
 		{36571628-728C-4ACD-A47F-503BA91C5D43} = {36571628-728C-4ACD-A47F-503BA91C5D43}
+		{343AC9C6-6800-4F52-9571-424AA837B304} = {343AC9C6-6800-4F52-9571-424AA837B304}
 		{2EF7ACDC-F742-4CB6-B301-A242F52BE5C3} = {2EF7ACDC-F742-4CB6-B301-A242F52BE5C3}
 	EndProjectSection
 EndProject
@@ -20,9 +21,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "UnitTests", "UnitTests\Unit
 		{36571628-728C-4ACD-A47F-503BA91C5D43} = {36571628-728C-4ACD-A47F-503BA91C5D43}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ArduinoJson", "ArduinoJson\ArduinoJson.vcxproj", "{3C5EC693-0C58-4D2F-8B6A-8CC68E43D3A0}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "KIMCFCommsDevel", "KIMCFCommsDevel\KIMCFCommsDevel.vcxproj", "{5BDAE0E1-C864-4167-9DE1-76E08D838CDD}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libArduinoCore-host", "lib\vs2019\libArduinoCore-host\libArduinoCore-host.vcxproj", "{343AC9C6-6800-4F52-9571-424AA837B304}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -62,14 +63,6 @@ Global
 		{7D271C7F-39AE-4F46-A99B-C3D6A53BA358}.Release|x64.ActiveCfg = Release|x64
 		{7D271C7F-39AE-4F46-A99B-C3D6A53BA358}.Release|x64.Build.0 = Release|x64
 		{7D271C7F-39AE-4F46-A99B-C3D6A53BA358}.Release|x86.ActiveCfg = Release|x64
-		{3C5EC693-0C58-4D2F-8B6A-8CC68E43D3A0}.Debug|x64.ActiveCfg = Debug|x64
-		{3C5EC693-0C58-4D2F-8B6A-8CC68E43D3A0}.Debug|x64.Build.0 = Debug|x64
-		{3C5EC693-0C58-4D2F-8B6A-8CC68E43D3A0}.Debug|x86.ActiveCfg = Debug|Win32
-		{3C5EC693-0C58-4D2F-8B6A-8CC68E43D3A0}.Debug|x86.Build.0 = Debug|Win32
-		{3C5EC693-0C58-4D2F-8B6A-8CC68E43D3A0}.Release|x64.ActiveCfg = Release|x64
-		{3C5EC693-0C58-4D2F-8B6A-8CC68E43D3A0}.Release|x64.Build.0 = Release|x64
-		{3C5EC693-0C58-4D2F-8B6A-8CC68E43D3A0}.Release|x86.ActiveCfg = Release|Win32
-		{3C5EC693-0C58-4D2F-8B6A-8CC68E43D3A0}.Release|x86.Build.0 = Release|Win32
 		{5BDAE0E1-C864-4167-9DE1-76E08D838CDD}.Debug|x64.ActiveCfg = Debug|x64
 		{5BDAE0E1-C864-4167-9DE1-76E08D838CDD}.Debug|x64.Build.0 = Debug|x64
 		{5BDAE0E1-C864-4167-9DE1-76E08D838CDD}.Debug|x86.ActiveCfg = Debug|Win32
@@ -78,6 +71,12 @@ Global
 		{5BDAE0E1-C864-4167-9DE1-76E08D838CDD}.Release|x64.Build.0 = Release|x64
 		{5BDAE0E1-C864-4167-9DE1-76E08D838CDD}.Release|x86.ActiveCfg = Release|Win32
 		{5BDAE0E1-C864-4167-9DE1-76E08D838CDD}.Release|x86.Build.0 = Release|Win32
+		{343AC9C6-6800-4F52-9571-424AA837B304}.Debug|x64.ActiveCfg = Debug|x64
+		{343AC9C6-6800-4F52-9571-424AA837B304}.Debug|x64.Build.0 = Debug|x64
+		{343AC9C6-6800-4F52-9571-424AA837B304}.Debug|x86.ActiveCfg = Debug|x64
+		{343AC9C6-6800-4F52-9571-424AA837B304}.Release|x64.ActiveCfg = Release|x64
+		{343AC9C6-6800-4F52-9571-424AA837B304}.Release|x64.Build.0 = Release|x64
+		{343AC9C6-6800-4F52-9571-424AA837B304}.Release|x86.ActiveCfg = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

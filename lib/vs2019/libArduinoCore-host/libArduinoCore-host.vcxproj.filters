@@ -15,75 +15,75 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\ArduinoCore-host\api\ArduinoAPI.h">
+    <ClInclude Include="..\..\ArduinoCore-host\api\ArduinoAPI.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\ArduinoCore-host\api\Binary.h">
+    <ClInclude Include="..\..\ArduinoCore-host\api\Binary.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\ArduinoCore-host\api\Client.h">
+    <ClInclude Include="..\..\ArduinoCore-host\api\Client.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\ArduinoCore-host\api\Common.h">
+    <ClInclude Include="..\..\ArduinoCore-host\api\Common.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\ArduinoCore-host\api\Compat.h">
+    <ClInclude Include="..\..\ArduinoCore-host\api\Compat.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\ArduinoCore-host\api\IPAddress.h">
+    <ClInclude Include="..\..\ArduinoCore-host\api\IPAddress.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\ArduinoCore-host\api\Print.h">
+    <ClInclude Include="..\..\ArduinoCore-host\api\Print.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\ArduinoCore-host\api\Print_std.h">
+    <ClInclude Include="..\..\ArduinoCore-host\api\Print_std.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\ArduinoCore-host\api\Printable.h">
+    <ClInclude Include="..\..\ArduinoCore-host\api\Printable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\ArduinoCore-host\api\RingBuffer.h">
+    <ClInclude Include="..\..\ArduinoCore-host\api\RingBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\ArduinoCore-host\api\Server.h">
+    <ClInclude Include="..\..\ArduinoCore-host\api\Server.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\ArduinoCore-host\api\Stream.h">
+    <ClInclude Include="..\..\ArduinoCore-host\api\Stream.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\ArduinoCore-host\api\Stream_std.h">
+    <ClInclude Include="..\..\ArduinoCore-host\api\Stream_std.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\ArduinoCore-host\api\StringHelpers.h">
+    <ClInclude Include="..\..\ArduinoCore-host\api\StringHelpers.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\ArduinoCore-host\api\Udp.h">
+    <ClInclude Include="..\..\ArduinoCore-host\api\Udp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\ArduinoCore-host\api\WCharacter.h">
+    <ClInclude Include="..\..\ArduinoCore-host\api\WCharacter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\ArduinoCore-host\api\WString.h">
+    <ClInclude Include="..\..\ArduinoCore-host\api\WString.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\ArduinoCore-host\api\Common.cpp">
+    <ClCompile Include="..\..\ArduinoCore-host\api\Common.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\ArduinoCore-host\api\IPAddress.cpp">
+    <ClCompile Include="..\..\ArduinoCore-host\api\IPAddress.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\ArduinoCore-host\api\Print.cpp">
+    <ClCompile Include="..\..\ArduinoCore-host\api\Print.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\ArduinoCore-host\api\Printable.cpp">
+    <ClCompile Include="..\..\ArduinoCore-host\api\Printable.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\ArduinoCore-host\api\Stream.cpp">
+    <ClCompile Include="..\..\ArduinoCore-host\api\Stream.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\ArduinoCore-host\api\WString.cpp">
+    <ClCompile Include="..\..\ArduinoCore-host\api\WString.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
