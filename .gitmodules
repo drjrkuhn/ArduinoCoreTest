@@ -4,3 +4,6 @@
 [submodule "lib/SlipInPlace"]
 	path = lib/SlipInPlace
 	url = https://github.com/drjrkuhn/SlipInPlace.git
+[submodule "ArduinoCore-host"]
+	path = lib/SlipInPlace
+	url = https://github.com/drjrkuhn/ArduinoCore-host.git
