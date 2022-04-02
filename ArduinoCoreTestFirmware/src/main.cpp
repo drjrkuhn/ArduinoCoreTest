@@ -19,6 +19,7 @@
         {                                   \
             SerialUSB1.print("JSON: ");     \
             serializeJson(doc, SerialUSB1); \
+            SerialUSB1.println();           \
         }
 #else
 #    define log_begin()
@@ -55,6 +56,9 @@ uint8_t pktbuf[pktbuf_size];
 using encoder = slip::encoder_null<uint8_t>;
 using decoder = slip::decoder_null<uint8_t>;
 
+#define SERIALIZER      serializeMsgPack
+#define DESERIALIZER    deserializeMsgPack
+
 void loop() {
     StaticJsonDocument<200> doc;
 
@@ -66,7 +70,7 @@ void loop() {
         str.copy((char*)pktbuf, nread);
         log_print("GOT: ");
         log_println(str);
-        DeserializationError error = deserializeJson(doc, (char*)pktbuf, nread);
+        DeserializationError error = DESERIALIZER(doc, (char*)pktbuf, nread);
         // Test if parsing succeeds.
         if (error) {
             log_print(F("deserializeJson() failed: "));
@@ -81,7 +85,7 @@ void loop() {
                 StaticJsonDocument<100> reply;
                 reply.add("MM-Ard");
                 reply.add(2);
-                size_t size = serializeJson(reply, pktbuf, pktbuf_size);
+                size_t size = SERIALIZER(reply, pktbuf, pktbuf_size);
                 size_t esize = encoder::encode(pktbuf, pktbuf_size, pktbuf, size);
                 Serial.write(pktbuf, esize);
                 log_json(reply);

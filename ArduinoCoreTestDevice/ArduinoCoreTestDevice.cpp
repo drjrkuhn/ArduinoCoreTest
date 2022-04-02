@@ -13,6 +13,7 @@
 //
 
 #include "ArduinoCoreTestDevice.h"
+#include <Common.h>
 
 #include <slipinplace.h>
 
@@ -28,6 +29,9 @@
 #include <windows.h>
 #endif
 #include "FixSnprintf.h"
+
+#define SERIALIZER      json::serializeMsgPack
+#define DESERIALIZER    json::deserializeMsgPack
 
 namespace json = ARDUINOJSON_NAMESPACE;
 
@@ -126,7 +130,7 @@ int CArduinoCoreTestDeviceHub::GetControllerVersion(int& version) {
     serial_.clear();
     json::StaticJsonDocument<200> command;
     command.add("Version");
-    size_t size = json::serializeJson(command, pktbuf, pktbuf_size);
+    size_t size = SERIALIZER(command, pktbuf, pktbuf_size);
     size_t esize = encoder::encode(pktbuf, pktbuf_size, pktbuf, size);
     serial_.write(pktbuf, esize);
 
@@ -135,7 +139,7 @@ int CArduinoCoreTestDeviceHub::GetControllerVersion(int& version) {
     size_t nread = decoder::decode(pktbuf, pktbuf_size, pktbuf, nreceived);
     json::StaticJsonDocument<200> reply;
     json::DeserializationError error =
-        json::deserializeJson(reply, (char*)pktbuf, nread);
+        DESERIALIZER(reply, (char*)pktbuf, nread);
     // Test if parsing succeeds.
     if (error) {
       LogMessage("deserializeJson() failed: ", error.c_str());
@@ -332,6 +336,7 @@ int CArduinoCoreTestDeviceHub::OnTest(MM::PropertyBase* pProp,
       cout << "=== TESTING ===" << endl;
       int version;
       int ret = GetControllerVersion(version);
+      arduino::delay(1);
       if (ret == DEVICE_OK) {
         cout << "Found controller version: " << version << endl;
       } else {
