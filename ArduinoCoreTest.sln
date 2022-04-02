@@ -6,15 +6,12 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ArduinoCoreTestDevice", "ArduinoCoreTestDevice\ArduinoCoreTestDevice.vcxproj", "{ACEB2F36-76C8-486F-8026-0FD06CBA1BFF}"
 	ProjectSection(ProjectDependencies) = postProject
 		{36571628-728C-4ACD-A47F-503BA91C5D43} = {36571628-728C-4ACD-A47F-503BA91C5D43}
-		{3A7AF790-E5E6-4014-AE40-1397BA7B80A2} = {3A7AF790-E5E6-4014-AE40-1397BA7B80A2}
 		{2EF7ACDC-F742-4CB6-B301-A242F52BE5C3} = {2EF7ACDC-F742-4CB6-B301-A242F52BE5C3}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MMCore", "..\..\mmCoreAndDevices\MMCore\MMCore.vcxproj", "{36571628-728C-4ACD-A47F-503BA91C5D43}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MMDevice-SharedRuntime", "..\..\mmCoreAndDevices\MMDevice\MMDevice-SharedRuntime.vcxproj", "{B8C95F39-54BF-40A9-807B-598DF2821D55}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ArduinoCore-hostlib", "ArduinoCore-hostlib\ArduinoCore-hostlib.vcxproj", "{3A7AF790-E5E6-4014-AE40-1397BA7B80A2}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SerialManager", "..\..\mmCoreAndDevices\DeviceAdapters\SerialManager\SerialManager.vcxproj", "{2EF7ACDC-F742-4CB6-B301-A242F52BE5C3}"
 EndProject
@@ -53,12 +50,6 @@ Global
 		{B8C95F39-54BF-40A9-807B-598DF2821D55}.Release|x64.ActiveCfg = Release|x64
 		{B8C95F39-54BF-40A9-807B-598DF2821D55}.Release|x64.Build.0 = Release|x64
 		{B8C95F39-54BF-40A9-807B-598DF2821D55}.Release|x86.ActiveCfg = Release|x64
-		{3A7AF790-E5E6-4014-AE40-1397BA7B80A2}.Debug|x64.ActiveCfg = Debug|x64
-		{3A7AF790-E5E6-4014-AE40-1397BA7B80A2}.Debug|x64.Build.0 = Debug|x64
-		{3A7AF790-E5E6-4014-AE40-1397BA7B80A2}.Debug|x86.ActiveCfg = Debug|x64
-		{3A7AF790-E5E6-4014-AE40-1397BA7B80A2}.Release|x64.ActiveCfg = Release|x64
-		{3A7AF790-E5E6-4014-AE40-1397BA7B80A2}.Release|x64.Build.0 = Release|x64
-		{3A7AF790-E5E6-4014-AE40-1397BA7B80A2}.Release|x86.ActiveCfg = Release|x64
 		{2EF7ACDC-F742-4CB6-B301-A242F52BE5C3}.Debug|x64.ActiveCfg = Debug|x64
 		{2EF7ACDC-F742-4CB6-B301-A242F52BE5C3}.Debug|x64.Build.0 = Debug|x64
 		{2EF7ACDC-F742-4CB6-B301-A242F52BE5C3}.Debug|x86.ActiveCfg = Debug|x64

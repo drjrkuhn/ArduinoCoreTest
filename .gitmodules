@@ -1,9 +1,3 @@
-[submodule "ArduinoCore-host"]
-	path = ArduinoCore-host
-	url = https://github.com/drjrkuhn/ArduinoCore-host.git
-[submodule "third-party/ArduinoJson"]
-	path = third-party/ArduinoJson
-	url = https://github.com/bblanchon/ArduinoJson.git
 [submodule "lib/ArduinoJson"]
 	path = lib/ArduinoJson
 	url = https://github.com/bblanchon/ArduinoJson.git
