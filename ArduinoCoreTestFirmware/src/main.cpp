@@ -52,8 +52,8 @@ int loopnum = 0;
 const size_t pktbuf_size = 512;
 uint8_t pktbuf[pktbuf_size];
 
-using encoder = slip::encoder<uint8_t>;
-using decoder = slip::decoder<uint8_t>;
+using encoder = slip::encoder_null<uint8_t>;
+using decoder = slip::decoder_null<uint8_t>;
 
 void loop() {
     StaticJsonDocument<200> doc;
@@ -80,7 +80,7 @@ void loop() {
             if (command == "Version") {
                 StaticJsonDocument<100> reply;
                 reply.add("MM-Ard");
-                reply.add(1);
+                reply.add(2);
                 size_t size = serializeJson(reply, pktbuf, pktbuf_size);
                 size_t esize = encoder::encode(pktbuf, pktbuf_size, pktbuf, size);
                 Serial.write(pktbuf, esize);

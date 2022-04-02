@@ -1,4 +1,4 @@
- //////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // FILE:          ArduinoCoreTestDevice.h
 // PROJECT:       Micro-Manager
 // SUBSYSTEM:     DeviceAdapters
@@ -19,12 +19,12 @@
 #define NOMINMAX
 #include <Stream.h>
 
-#include "MMDevice.h"
-#include "DeviceBase.h"
-#include <string>
-#include <map>
 #include <deque>
+#include <map>
+#include <string>
 
+#include "DeviceBase.h"
+#include "MMDevice.h"
 
 //////////////////////////////////////////////////////////////////////////////
 // Error codes
@@ -39,117 +39,230 @@
 #define ERR_NO_PORT_SET 108
 #define ERR_VERSION_MISMATCH 109
 
-//class ArduinoCoreTestDeviceInputMonitorThread;
+// class ArduinoCoreTestDeviceInputMonitorThread;
 
-
+#define RDBUF_DEQUEU_SIZE 1
 
 template <class HUB>
 class HubStreamAdapter : public Stream {
-public:
-    HubStreamAdapter(HUB* hub) : hub_(hub) {}
+ public:
+  HubStreamAdapter(HUB* hub) : hub_(hub) {}
 
-    virtual size_t write(const uint8_t byte) override {
-        return write(&byte, 1);
+  virtual size_t write(const uint8_t byte) override { return write(&byte, 1); }
+
+  virtual size_t write(const uint8_t* str, size_t n) override {
+    const char* src = reinterpret_cast<const char*>(str);
+    std::vector<char> out(src, src + n);
+    int err = hub_->WriteToComPort(hub_->port_.c_str(), str,
+                                   static_cast<unsigned int>(n));
+    return (err == DEVICE_OK) ? n : 0;
+  }
+
+  int availableForWrite() override { return std::numeric_limits<int>::max(); }
+
+  virtual int available() override {
+    getNextChar();
+    return static_cast<int>(rdbuf_.size());
+  }
+
+  virtual int read() override {
+    getNextChar();
+    if (rdbuf_.empty()) return -1;
+    int front = rdbuf_.front();
+    rdbuf_.pop_front();
+    return front;
+  }
+  virtual int peek() override {
+    getNextChar();
+    return rdbuf_.empty() ? -1 : rdbuf_.front();
+  }
+
+  virtual void clear() { hub_->PurgeComPort(hub_->port_.c_str()); }
+
+  /**
+   * read the next set of bytes from the device
+   */
+  // readBytes(buffer,length) calls
+  //    int err =
+  //    DeviceBase::ReadFromComPort(portLabel,buf,bufLength,[OUT]bytesRead);
+  //        which calls
+  //        int err =
+  //        CallBack::ReadFromSerial(this,portLabel,buf,bufLength,[OUT]bytesRead);
+  //            which calls
+  //            int err =
+  //            SerialInstance::Read(buf, bufLength, [OUT] bytesRead);
+  //                which skips MMCore and just directly calls
+  //                int err =
+  //                GetImpl()->Read(buf, bufLen, [OUT]charsRead);
+  //
+  // So this is a somewhat direct read operation compred to GetSerialAnswer
+  size_t readBytes(char* buffer, size_t length) {
+    int lastc = -1;
+    if (!rdbuf_.empty() && (lastc = read()) >= 0) {
+      *(buffer++) = (char)lastc;
+      length--;
     }
-
-    virtual size_t write(const uint8_t* str, size_t n) override {
-        const char* src = reinterpret_cast<const char*>(str);
-        std::vector<char> out(src, src + n);
-        int err = hub_->WriteToComPort(hub_->port_.c_str(), str, static_cast<unsigned int>(n));
-        return (err == DEVICE_OK) ? n : 0;
+    unsigned long bytesRead;
+    int err =
+        hub_->ReadFromComPort(hub_->port_.c_str(), buffer, length, bytesRead);
+    if (err == DEVICE_OK) {
+      // GetSerialAnswer discards the terminator
+      if (lastc >= 0) bytesRead++;
+      return bytesRead;
+    } else {
+      hub_->LogMessage("HubStreamAdapter::readBytes(buffer,length) failed: ");
+      char text[MM::MaxStrLength];
+      GetErrorText(errorCode, text);
+      hub_->LogMessage(text);
+      if (lastc >= 0) bytesRead++;
+      return bytesRead;
     }
+  }
 
-    virtual int availableForWrite() override {
-        return std::numeric_limits<int>::max();
+  /**
+   * readStringUntil
+   */
+  // Oh, the tagled web we weave to search for messages with terminators.
+  // readStringUntil calls
+  //    int err =
+  //    DeviceBase::GetSerialAnswer(portName,term,[OUT]answerString);
+  //        which creates an internal `char bufferA[2000]` and then calls
+  //        int err =
+  //        CoreCallback::GetSerialAnswer(this,portName,2000,bufferA,term);
+  //            which calls
+  //            std::string answer =
+  //            MMCore::getSerialPortAnswer(portName,term);
+  //                which checks that the term is not NULL and doesn't start
+  //                with '\0' (NO NULL TERMINATORS) then creates another
+  //                internal `char bufferB[1024]` and calls
+  //                int ret =
+  //                SerialInstance::GetAnswer(bufferB,1024,term);
+  //                    which calls
+  //                    GetImpl()->GetAnswer(bufferB, 1024, term);
+  //            MMCore then creates a std::string from the NULL term bufferB
+  //            (so NO zeros in the middle of the buffer) and passes that
+  //            back to CoreCallback
+  //        CoreCallback does a strcpy of the answer into bufferA
+  //        and passed that bufferA back to
+  //    DeviceBase, which then copies it's own bufferA back into the
+  //    `answerString` string and returns that to
+  // readStringUntil
+  //
+  // So, `readStringUntil`, creates two additional buffers and one intermediate
+  // string (with its own buffer)
+
+  std::string readStdStringUntil(char terminator) {
+    std::string compose;
+    // deal with any character already in the read buffer
+    int lastc;
+    if (!rdbuf_.empty() && (lastc = read()) >= 0) {
+      compose.append(1, (char)lastc);
+      if (lastc == terminator) return compose;
     }
-
-    virtual int available() override {
-        getNextChar();
-        return static_cast<int>(rdbuf_.size());
+    std::string answerString;
+    const char termstr[]{terminator, '\0'};
+    int err = hub_->GetSerialAnswer(hub_->port_.c_str(), termstr, answerString);
+    if (err == DEVICE_OK) {
+      // GetSerialAnswer discards the terminator
+      compose.append(answerString);
+      compose.append(1, terminator);
+    } else {
+      hub_->LogMessage("HubStreamAdapter::readStdStringUntil(terminator) failed: ");
+      char text[MM::MaxStrLength];
+      hub_->GetErrorText(err, text);
+      hub_->LogMessage(text);
     }
+    return compose;
+  }
 
-    virtual int read() override {
-        getNextChar();
-        if (rdbuf_.empty())
-            return -1;
-        int front = rdbuf_.front();
-        rdbuf_.pop_front();
-        return front;
+  String readStringUntil(char terminator) {
+    return arduino::String(readStringUntil(terminator));
+  }
+
+  size_t readBytesUntil(char terminator, char* buffer, size_t length) {
+    std::string answer = readStdStringUntil(terminator);
+    size_t ngood = std::min(answer.length(), length);
+    std::strncpy(buffer, answer.c_str(), ngood);
+    if (answer.length() > length) {
+      hub_->LogMessage("HubStreamAdapter::readBytesUntil(terminator,buffer,length) "
+                 "failed: ");
+      char text[MM::MaxStrLength];
+      hub_->GetErrorText(DEVICE_BUFFER_OVERFLOW, text);
+      hub_->LogMessage(text);
     }
-    virtual int peek() override {
-        getNextChar();
-        return rdbuf_.empty() ? -1 : rdbuf_.front();
-    }
+    return ngood;
+  }
 
-    virtual void clear()  {
-        hub_->PurgeComPort(hub_->port_.c_str());
-    }
+  size_t readBytesUntil(char terminator, uint8_t* buffer, size_t length) {
+    return readBytesUntil(terminator, reinterpret_cast<char*>(buffer), length);
+  }
 
-
-
-protected:
-    // buffer the next character because MMCore doesn't have a peek function for serial
-    void getNextChar() {
-        if (rdbuf_.empty()) {
-            unsigned long timeout = arduino::millis() + getTimeout();
-            do {
-                unsigned char buf;
-                unsigned long read;
-                int err = hub_->ReadFromComPort(hub_->port_.c_str(), &buf, 1, read);
-                if (err == DEVICE_OK && read > 0) {
-                    rdbuf_.push_back(buf);
-                    return;
-                }
-            } while (arduino::millis() < timeout);
+ protected:
+  // buffer the next character because MMCore doesn't have a peek function for
+  // serial
+  void getNextChar() {
+    if (rdbuf_.empty()) {
+      unsigned long timeout = arduino::millis() + getTimeout();
+      do {
+        unsigned char buf;
+        unsigned long read;
+        int err = hub_->ReadFromComPort(hub_->port_.c_str(), &buf, 1, read);
+        if (err == DEVICE_OK && read > 0) {
+          rdbuf_.push_back(buf);
+          return;
         }
+      } while (arduino::millis() < timeout);
     }
+  }
 
-    std::deque<unsigned char> rdbuf_;
-    HUB* hub_;
+  std::deque<unsigned char> rdbuf_;
+  HUB* hub_;
 };
 
-class CArduinoCoreTestDeviceHub : public HubBase<CArduinoCoreTestDeviceHub>  
-{
-protected:
-    using StreamAdapter = HubStreamAdapter<CArduinoCoreTestDeviceHub>;
-    friend StreamAdapter;
-public:
-   CArduinoCoreTestDeviceHub();
-   ~CArduinoCoreTestDeviceHub();
+class CArduinoCoreTestDeviceHub : public HubBase<CArduinoCoreTestDeviceHub> {
+ protected:
+  using StreamAdapter = HubStreamAdapter<CArduinoCoreTestDeviceHub>;
+  friend StreamAdapter;
 
-   int Initialize();
-   int Shutdown();
-   void GetName(char* pszName) const;
-   bool Busy();
+ public:
+  CArduinoCoreTestDeviceHub();
+  ~CArduinoCoreTestDeviceHub();
 
-   bool SupportsDeviceDetection(void);
-   MM::DeviceDetectionStatus DetectDevice(void);
-   int DetectInstalledDevices();
+  int Initialize();
+  int Shutdown();
+  void GetName(char* pszName) const;
+  bool Busy();
 
-   // property handlers
-   int OnPort(MM::PropertyBase* pPropt, MM::ActionType eAct);
-   int OnVersion(MM::PropertyBase* pPropt, MM::ActionType eAct);
-   int OnTest(MM::PropertyBase* pPropt, MM::ActionType eAct);
+  bool SupportsDeviceDetection(void);
+  MM::DeviceDetectionStatus DetectDevice(void);
+  int DetectInstalledDevices();
 
-   // custom interface for child devices
-   bool IsPortAvailable() {return portAvailable_;}
+  // property handlers
+  int OnPort(MM::PropertyBase* pPropt, MM::ActionType eAct);
+  int OnVersion(MM::PropertyBase* pPropt, MM::ActionType eAct);
+  int OnTest(MM::PropertyBase* pPropt, MM::ActionType eAct);
 
-   //int PurgeComPortH() {return PurgeComPort(port_.c_str());}
-   //int WriteToComPortH(const unsigned char* command, unsigned len) {return WriteToComPort(port_.c_str(), command, len);}
-   //int ReadFromComPortH(unsigned char* answer, unsigned maxLen, unsigned long& bytesRead)
-   //{
-   //   return ReadFromComPort(port_.c_str(), answer, maxLen, bytesRead);
-   //}
-   static MMThreadLock& GetLock() {return lock_;}
+  // custom interface for child devices
+  bool IsPortAvailable() { return portAvailable_; }
 
-private:
-   int GetControllerVersion(int&);
-   std::string port_;
-   bool initialized_;
-   bool portAvailable_;
-   int version_;
-   static MMThreadLock lock_;
-   StreamAdapter serial_;
+  // int PurgeComPortH() {return PurgeComPort(port_.c_str());}
+  // int WriteToComPortH(const unsigned char* command, unsigned len) {return
+  // WriteToComPort(port_.c_str(), command, len);} int
+  // ReadFromComPortH(unsigned char* answer, unsigned maxLen, unsigned long&
+  // bytesRead)
+  //{
+  //   return ReadFromComPort(port_.c_str(), answer, maxLen, bytesRead);
+  //}
+  static MMThreadLock& GetLock() { return lock_; }
+
+ private:
+  int GetControllerVersion(int&);
+  std::string port_;
+  bool initialized_;
+  bool portAvailable_;
+  int version_;
+  static MMThreadLock lock_;
+  StreamAdapter serial_;
 };
 
-#endif //_ArduinoCoreTestDevice_H_
+#endif  //_ArduinoCoreTestDevice_H_

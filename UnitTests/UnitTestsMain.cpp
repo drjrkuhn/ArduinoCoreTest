@@ -2,12 +2,10 @@
 //
 
 #define NOMINMAX
-#include <Stream.h>
 
 #include <MMCore.h>
 #include <MMDevice.h>
 #include "DeviceBase.h"
-#include "ArduinoCoreTestDevice.h"
 #include <iostream>
 #include <string>
 #include <vector>
@@ -48,8 +46,7 @@ int main()
 	try {
 		// setup the serial port from the serial manager
 		core.loadDevice(portLabel.c_str(), "SerialManager", portOutput.c_str());
-		cout << "Fast USB to Serial was: " << core.getProperty(portLabel.c_str(), "Fast USB to Serial") << endl;
-
+		//cout << "Fast USB to Serial was: " << core.getProperty(portLabel.c_str(), "Fast USB to Serial") << endl;
 		core.setProperty(portLabel.c_str(), "Fast USB to Serial", "Enable");
 		core.setProperty(portLabel.c_str(), "Verbose", "1");
 		core.initializeDevice(portLabel.c_str());

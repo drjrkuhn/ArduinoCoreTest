@@ -51,7 +51,10 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <TargetName>$(ProjectName)</TargetName>
     <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(MM_BUILDDIR)\$(Configuration)\$(Platform)\</LibraryPath>
-    <ExternalIncludePath>$(VC_IncludePath);$(MM_MMDEVICE_INCLUDEDIR)\..\MMCore;$(WindowsSDK_IncludePath);$(SolutionDir)ArduinoCoreTestDevice;$(SolutionDir)ArduinoCore-host\api</ExternalIncludePath>
+    <IncludePath>$(SolutionDir)lib\ArduinoCore-host\api;$(SolutionDir)lib\ArduinoJson\src;$(SolutionDir)lib\SlipInPlace\src;$(MM_SRCROOT)\MMCore;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <IncludePath>$(SolutionDir)lib\ArduinoCore-host\api;$(SolutionDir)lib\ArduinoJson\src;$(SolutionDir)lib\SlipInPlace\src;$(MM_SRCROOT)\MMCore;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Midl>
