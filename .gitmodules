@@ -7,3 +7,6 @@
 [submodule "lib/ArduinoCore-host"]
 	path = lib/ArduinoCore-host
 	url = https://github.com/drjrkuhn/ArduinoCore-host.git
+[submodule "lib/Ardulingua"]
+	path = lib/Ardulingua
+	url = https://github.com/drjrkuhn/Ardulingua.git
