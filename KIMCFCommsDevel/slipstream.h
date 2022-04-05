@@ -79,13 +79,13 @@ namespace sproto {
 	/**
 	 * @brief Base class for SLIP protocol communications
 	 *
-	 * @tparam D Derived class used for CRTP implementation of static polymorphism
+	 * @tparam DEV Derived class used for CRTP implementation of static polymorphism
 	 */
-	template <class D> // D is the derived type
+	template <class DEV> // DEV is the derived type
 	class SlipStream {
 	protected:
-		D& derived() { return *static_cast<D*>(this); }
-		D const& derived() const { return *static_cast<D const*>(this); }
+		DEV& derived() { return *static_cast<DEV*>(this); }
+		DEV const& derived() const { return *static_cast<DEV const*>(this); }
 
 		// re-define in derived class. These instances should be unreachable. 
 		size_t writeBytes_impl(const uint8_t* buffer, size_t size) { std::assert(false); return 0; };
@@ -221,7 +221,7 @@ namespace sproto {
 		 * @returns number of characters written to the stream
 		 */
 		size_t writeBytes(const uint8_t* buffer, size_t size) {
-			// return static_cast<D*>(this)->writeBytes_impl(buffer, size);
+			// return static_cast<DEV*>(this)->writeBytes_impl(buffer, size);
 			return derived().writeBytes_impl(buffer, size);
 		}
 
