@@ -51,10 +51,10 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <TargetName>$(ProjectName)</TargetName>
     <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(MM_BUILDDIR)\$(Configuration)\$(Platform)\</LibraryPath>
-    <IncludePath>$(SolutionDir)lib\ArduinoCore-host\api;$(SolutionDir)lib\ArduinoJson\src;$(SolutionDir)lib\SlipInPlace\src;$(MM_SRCROOT)\MMCore;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)lib\ArduinoCore-host\api;$(SolutionDir)lib\ArduinoJson\src;$(SolutionDir)lib\SlipInPlace\src;$(MM_SRCROOT)\MMCore;$(SolutionDir)lib\Ardulingua\mmsrc;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(SolutionDir)lib\ArduinoCore-host\api;$(SolutionDir)lib\ArduinoJson\src;$(SolutionDir)lib\SlipInPlace\src;$(MM_SRCROOT)\MMCore;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)lib\ArduinoCore-host\api;$(SolutionDir)lib\ArduinoJson\src;$(SolutionDir)lib\SlipInPlace\src;$(MM_SRCROOT)\MMCore;$(SolutionDir)lib\Ardulingua\mmsrc;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Midl>

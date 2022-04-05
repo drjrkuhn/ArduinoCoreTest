@@ -31,8 +31,8 @@
 #endif
 #include "FixSnprintf.h"
 
-#define SERIALIZER json::serializeMsgPack
-#define DESERIALIZER json::deserializeMsgPack
+#define SERIALIZER json::serializeJson
+#define DESERIALIZER json::deserializeJson
 
 namespace json = ARDUINOJSON_NAMESPACE;
 
@@ -239,10 +239,10 @@ int CArduinoCoreTestDeviceHub::Initialize() {
         //}
         return deviceError.error;
     }
-    int ret =
-        CreateProperty(MM::g_Keyword_Name, g_DeviceNameArduinoCoreTestDeviceHub,
-                       MM::String, true);
-    if (DEVICE_OK != ret) return ret;
+    //int ret =
+    //    CreateProperty(MM::g_Keyword_Name, g_DeviceNameArduinoCoreTestDeviceHub,
+    //                   MM::String, true);
+    //if (DEVICE_OK != ret) return ret;
 
     // The first second or so after opening the serial port, the
     // ArduinoCoreTestDevice is waiting for firmwareupgrades.  Simply sleep 1
@@ -253,7 +253,7 @@ int CArduinoCoreTestDeviceHub::Initialize() {
 
     // Check that we have a controller:
     PurgeComPort(port_.c_str());
-    ret = GetControllerVersion(version_);
+    int ret = GetControllerVersion(version_);
     if (DEVICE_OK != ret) return ret;
 
     if (version_ < g_Min_MMVersion || version_ > g_Max_MMVersion)
@@ -307,16 +307,16 @@ int CArduinoCoreTestDeviceHub::Shutdown() {
     return DEVICE_OK;
 }
 
-int CArduinoCoreTestDeviceHub::OnPort(MM::PropertyBase* pProp,
-                                      MM::ActionType pAct) {
-    if (pAct == MM::BeforeGet) {
-        pProp->Set(port_.c_str());
-    } else if (pAct == MM::AfterSet) {
-        pProp->Get(port_);
-        portAvailable_ = true;
-    }
-    return DEVICE_OK;
-}
+//int CArduinoCoreTestDeviceHub::OnPort(MM::PropertyBase* pProp,
+//                                      MM::ActionType pAct) {
+//    if (pAct == MM::BeforeGet) {
+//        pProp->Set(port_.c_str());
+//    } else if (pAct == MM::AfterSet) {
+//        pProp->Get(port_);
+//        portAvailable_ = true;
+//    }
+//    return DEVICE_OK;
+//}
 
 int CArduinoCoreTestDeviceHub::OnVersion(MM::PropertyBase* pProp,
                                          MM::ActionType pAct) {

@@ -53,11 +53,11 @@ int loopnum = 0;
 const size_t pktbuf_size = 512;
 uint8_t pktbuf[pktbuf_size];
 
-using encoder = slip::encoder_null<uint8_t>;
-using decoder = slip::decoder_null<uint8_t>;
+using encoder = slip::null_encoder;
+using decoder = slip::null_decoder;
 
-#define SERIALIZER      serializeMsgPack
-#define DESERIALIZER    deserializeMsgPack
+#define SERIALIZER      serializeJson
+#define DESERIALIZER    deserializeJson
 
 void loop() {
     StaticJsonDocument<200> doc;

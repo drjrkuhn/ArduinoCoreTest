@@ -15,8 +15,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MMCore", "..\..\mmCoreAndDe
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MMDevice-SharedRuntime", "..\..\mmCoreAndDevices\MMDevice\MMDevice-SharedRuntime.vcxproj", "{B8C95F39-54BF-40A9-807B-598DF2821D55}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SerialManager", "..\..\mmCoreAndDevices\DeviceAdapters\SerialManager\SerialManager.vcxproj", "{2EF7ACDC-F742-4CB6-B301-A242F52BE5C3}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "UnitTests", "UnitTests\UnitTests.vcxproj", "{7D271C7F-39AE-4F46-A99B-C3D6A53BA358}"
 	ProjectSection(ProjectDependencies) = postProject
 		{36571628-728C-4ACD-A47F-503BA91C5D43} = {36571628-728C-4ACD-A47F-503BA91C5D43}
@@ -27,6 +25,11 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libArduinoCore-host", "lib\vs2019\libArduinoCore-host\libArduinoCore-host.vcxproj", "{343AC9C6-6800-4F52-9571-424AA837B304}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libArdulingua", "lib\vs2019\libArdulingua\libArdulingua.vcxproj", "{085A46E4-1299-4DBE-8755-E2FAAF312C1E}"
+	ProjectSection(ProjectDependencies) = postProject
+		{B8C95F39-54BF-40A9-807B-598DF2821D55} = {B8C95F39-54BF-40A9-807B-598DF2821D55}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SerialManager", "..\..\mmCoreAndDevices\DeviceAdapters\SerialManager\SerialManager.vcxproj", "{2EF7ACDC-F742-4CB6-B301-A242F52BE5C3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -54,12 +57,6 @@ Global
 		{B8C95F39-54BF-40A9-807B-598DF2821D55}.Release|x64.ActiveCfg = Release|x64
 		{B8C95F39-54BF-40A9-807B-598DF2821D55}.Release|x64.Build.0 = Release|x64
 		{B8C95F39-54BF-40A9-807B-598DF2821D55}.Release|x86.ActiveCfg = Release|x64
-		{2EF7ACDC-F742-4CB6-B301-A242F52BE5C3}.Debug|x64.ActiveCfg = Debug|x64
-		{2EF7ACDC-F742-4CB6-B301-A242F52BE5C3}.Debug|x64.Build.0 = Debug|x64
-		{2EF7ACDC-F742-4CB6-B301-A242F52BE5C3}.Debug|x86.ActiveCfg = Debug|x64
-		{2EF7ACDC-F742-4CB6-B301-A242F52BE5C3}.Release|x64.ActiveCfg = Release|x64
-		{2EF7ACDC-F742-4CB6-B301-A242F52BE5C3}.Release|x64.Build.0 = Release|x64
-		{2EF7ACDC-F742-4CB6-B301-A242F52BE5C3}.Release|x86.ActiveCfg = Release|x64
 		{7D271C7F-39AE-4F46-A99B-C3D6A53BA358}.Debug|x64.ActiveCfg = Debug|x64
 		{7D271C7F-39AE-4F46-A99B-C3D6A53BA358}.Debug|x64.Build.0 = Debug|x64
 		{7D271C7F-39AE-4F46-A99B-C3D6A53BA358}.Debug|x86.ActiveCfg = Debug|x64
@@ -86,6 +83,12 @@ Global
 		{085A46E4-1299-4DBE-8755-E2FAAF312C1E}.Release|x64.ActiveCfg = Release|x64
 		{085A46E4-1299-4DBE-8755-E2FAAF312C1E}.Release|x64.Build.0 = Release|x64
 		{085A46E4-1299-4DBE-8755-E2FAAF312C1E}.Release|x86.ActiveCfg = Release|x64
+		{2EF7ACDC-F742-4CB6-B301-A242F52BE5C3}.Debug|x64.ActiveCfg = Debug|x64
+		{2EF7ACDC-F742-4CB6-B301-A242F52BE5C3}.Debug|x64.Build.0 = Debug|x64
+		{2EF7ACDC-F742-4CB6-B301-A242F52BE5C3}.Debug|x86.ActiveCfg = Debug|x64
+		{2EF7ACDC-F742-4CB6-B301-A242F52BE5C3}.Release|x64.ActiveCfg = Release|x64
+		{2EF7ACDC-F742-4CB6-B301-A242F52BE5C3}.Release|x64.Build.0 = Release|x64
+		{2EF7ACDC-F742-4CB6-B301-A242F52BE5C3}.Release|x86.ActiveCfg = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

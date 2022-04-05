@@ -83,7 +83,7 @@ class CArduinoCoreTestDeviceHub : public HubBase<CArduinoCoreTestDeviceHub> {
     int DetectInstalledDevices();
 
     // property handlers
-    int OnPort(MM::PropertyBase* pPropt, MM::ActionType eAct);
+    //int OnPort(MM::PropertyBase* pPropt, MM::ActionType eAct);
     int OnVersion(MM::PropertyBase* pPropt, MM::ActionType eAct);
     int OnTest(MM::PropertyBase* pPropt, MM::ActionType eAct);
 

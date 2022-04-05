@@ -13,6 +13,8 @@
 
 #include <iostream>
 
+#include "DevicePropHelpers.h"
+
 inline std::string getPropertyTypeVerbose(MM::PropertyType t)
 {
 	switch (t)
@@ -54,6 +56,12 @@ int main()
 		core.loadDevice(hubLabel.c_str(), moduleName.c_str(), deviceName.c_str());
 		core.setProperty(hubLabel.c_str(), "Port", portLabel.c_str());
 		core.initializeDevice(hubLabel.c_str());
+
+		cout << "==== " << hubLabel << " Properties ====" << endl;
+        for (auto propName : core.getDevicePropertyNames(hubLabel.c_str())) {
+            cout << dprop::ToString(core.getPropertyType(hubLabel.c_str(), propName.c_str())) << " " << propName;
+            cout << " = " << core.getProperty(hubLabel.c_str(), propName.c_str()) << endl;
+		}
 
 		//core.initializeAllDevices();
 
