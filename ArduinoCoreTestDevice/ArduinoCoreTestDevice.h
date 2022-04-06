@@ -25,21 +25,6 @@
 #include <LocalProp.h>
 #include <string>
 
-//////////////////////////////////////////////////////////////////////////////
-// Error codes
-//
-//#define ERR_UNKNOWN_POSITION 101
-//#define ERR_INITIALIZE_FAILED 102
-//#define ERR_WRITE_FAILED 103
-//#define ERR_CLOSE_FAILED 104
-//#define ERR_BOARD_NOT_FOUND 105
-//#define ERR_PORT_OPEN_FAILED 106
-//#define ERR_COMMUNICATION 107
-//#define ERR_NO_PORT_SET 108
-//#define ERR_VERSION_MISMATCH 109
-
-// class ArduinoCoreTestDeviceInputMonitorThread;
-
 using namespace dprop;
 
 const char* g_deviceNameHub = "ArduinoCoreTestDevice-Hub";
@@ -59,7 +44,7 @@ const auto g_infoLongProp = PropInfo<long>::build(g_longProp, 100000);
 class CArduinoCoreTestDeviceHub : public HubBase<CArduinoCoreTestDeviceHub> {
  protected:
     using HUB = CArduinoCoreTestDeviceHub;
-    LocalProp<std::string, HUB> portProp_;
+    LocalProp<std::string, HUB> port_;
     LocalProp<long, HUB> versionProp_;
     LocalProp<int, HUB> intProp_;
     LocalProp<long, HUB> longProp_;
@@ -100,9 +85,18 @@ class CArduinoCoreTestDeviceHub : public HubBase<CArduinoCoreTestDeviceHub> {
     //}
     static MMThreadLock& GetLock() { return lock_; }
 
+    bool port(const std::string& port) {
+        return port_.set(port);
+    }
+    const std::string port() const {
+        std::string res;
+        port_.getProperty(res);
+        return res;
+    }
+
  private:
     int GetControllerVersion(int&);
-    std::string port_;
+    //std::string port_;
     bool initialized_;
     bool portAvailable_;
     int version_;

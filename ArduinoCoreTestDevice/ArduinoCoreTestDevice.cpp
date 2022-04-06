@@ -87,23 +87,7 @@ CArduinoCoreTestDeviceHub::CArduinoCoreTestDeviceHub()
     dprop::initCommonErrors("ArduinoCoreTestDevice", 1, [this](int err, const char* txt) {
         SetErrorText(err, txt);
     });
-    portProp_.createLocalProp(this, g_infoPort);
-
-    //SetErrorText(ERR_PORT_OPEN_FAILED, "Failed opening ArduinoCoreTestDevice USB device");
-    //SetErrorText(ERR_BOARD_NOT_FOUND, "Did not find an ArduinoCoreTestDevice board with the correct firmware.  "
-    //                                  "Is the ArduinoCoreTestDevice board connected to this serial port?");
-    //SetErrorText(ERR_NO_PORT_SET, "Hub Device not found.  The ArduinoCoreTestDevice Hub device is "
-    //                              "needed to create this device");
-    //std::ostringstream errorText;
-    //errorText << "The firmware version on the ArduinoCoreTestDevice is not "
-    //             "compatible with this adapter.  Please use firmware version ";
-    //errorText << g_Min_MMVersion << " to " << g_Max_MMVersion;
-    //SetErrorText(ERR_VERSION_MISMATCH, errorText.str().c_str());
-
-    //CPropertyAction* pAct =
-    //    new CPropertyAction(this, &CArduinoCoreTestDeviceHub::OnPort);
-    //CreateProperty(MM::g_Keyword_Port, "Undefined", MM::String, false, pAct,
-    //               true);
+    port_.createLocalProp(this, g_infoPort);
 }
 
 CArduinoCoreTestDeviceHub::~CArduinoCoreTestDeviceHub() { Shutdown(); }
@@ -170,7 +154,7 @@ MM::DeviceDetectionStatus CArduinoCoreTestDeviceHub::DetectDevice(void) {
     char answerTO[MM::MaxStrLength];
 
     try {
-        std::string portLowerCase = port_;
+        std::string portLowerCase = port();
         for (std::string::iterator its = portLowerCase.begin();
              its != portLowerCase.end(); ++its) {
             *its = (char)tolower(*its);
@@ -179,31 +163,31 @@ MM::DeviceDetectionStatus CArduinoCoreTestDeviceHub::DetectDevice(void) {
             0 != portLowerCase.compare("unknown")) {
             result = MM::CanNotCommunicate;
             // record the default answer time out
-            GetCoreCallback()->GetDeviceProperty(port_.c_str(), "AnswerTimeout",
+            GetCoreCallback()->GetDeviceProperty(port().c_str(), "AnswerTimeout",
                                                  answerTO);
 
             // device specific default communication parameters
             // for ArduinoCoreTestDevice Duemilanova
-            GetCoreCallback()->SetDeviceProperty(port_.c_str(),
+            GetCoreCallback()->SetDeviceProperty(port().c_str(),
                                                  MM::g_Keyword_Handshaking, g_Off);
-            GetCoreCallback()->SetDeviceProperty(port_.c_str(),
+            GetCoreCallback()->SetDeviceProperty(port().c_str(),
                                                  MM::g_Keyword_BaudRate, "57600");
-            GetCoreCallback()->SetDeviceProperty(port_.c_str(),
+            GetCoreCallback()->SetDeviceProperty(port().c_str(),
                                                  MM::g_Keyword_StopBits, "1");
             // ArduinoCoreTestDevice timed out in GetControllerVersion even if
             // AnswerTimeout  = 300 ms
-            GetCoreCallback()->SetDeviceProperty(port_.c_str(), "AnswerTimeout",
+            GetCoreCallback()->SetDeviceProperty(port().c_str(), "AnswerTimeout",
                                                  "500.0");
-            GetCoreCallback()->SetDeviceProperty(port_.c_str(), "DelayBetweenCharsMs",
+            GetCoreCallback()->SetDeviceProperty(port().c_str(), "DelayBetweenCharsMs",
                                                  "0");
-            MM::Device* pS = GetCoreCallback()->GetDevice(this, port_.c_str());
+            MM::Device* pS = GetCoreCallback()->GetDevice(this, port().c_str());
             pS->Initialize();
             // The first second or so after opening the serial port, the
             // ArduinoCoreTestDevice is waiting for firmwareupgrades.  Simply sleep 2
             // seconds.
             CDeviceUtils::SleepMs(2000);
             MMThreadGuard myLock(lock_);
-            PurgeComPort(port_.c_str());
+            PurgeComPort(port().c_str());
             int v   = 0;
             int ret = GetControllerVersion(v);
             // later, Initialize will explicitly check the version #
@@ -215,7 +199,7 @@ MM::DeviceDetectionStatus CArduinoCoreTestDeviceHub::DetectDevice(void) {
             }
             pS->Shutdown();
             // always restore the AnswerTimeout to the default
-            GetCoreCallback()->SetDeviceProperty(port_.c_str(), "AnswerTimeout",
+            GetCoreCallback()->SetDeviceProperty(port().c_str(), "AnswerTimeout",
                                                  answerTO);
         }
     } catch (...) {
@@ -252,7 +236,7 @@ int CArduinoCoreTestDeviceHub::Initialize() {
     MMThreadGuard myLock(lock_);
 
     // Check that we have a controller:
-    PurgeComPort(port_.c_str());
+    PurgeComPort(port().c_str());
     int ret = GetControllerVersion(version_);
     if (DEVICE_OK != ret) return ret;
 

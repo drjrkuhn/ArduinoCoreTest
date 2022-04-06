@@ -17,7 +17,7 @@ class HubStreamAdapter : public Stream {
     virtual size_t write(const uint8_t* str, size_t n) override {
         const char* src = reinterpret_cast<const char*>(str);
         std::vector<char> out(src, src + n);
-        int err = hub_->WriteToComPort(hub_->port_.c_str(), str,
+        int err = hub_->WriteToComPort(hub_->port().c_str(), str,
                                        static_cast<unsigned int>(n));
         return (err == DEVICE_OK) ? n : 0;
     }
@@ -41,7 +41,7 @@ class HubStreamAdapter : public Stream {
         return rdbuf_.empty() ? -1 : rdbuf_.front();
     }
 
-    virtual void clear() { hub_->PurgeComPort(hub_->port_.c_str()); }
+    virtual void clear() { hub_->PurgeComPort(hub_->port().c_str()); }
 
     /**
    * read the next set of bytes from the device
@@ -68,7 +68,7 @@ class HubStreamAdapter : public Stream {
         }
         unsigned long bytesRead;
         int err =
-            hub_->ReadFromComPort(hub_->port_.c_str(), buffer, length, bytesRead);
+            hub_->ReadFromComPort(hub_->port().c_str(), buffer, length, bytesRead);
         if (err == DEVICE_OK) {
             // GetSerialAnswer discards the terminator
             if (lastc >= 0) bytesRead++;
@@ -125,7 +125,7 @@ class HubStreamAdapter : public Stream {
         }
         std::string answerString;
         const char termstr[]{terminator, '\0'};
-        int err = hub_->GetSerialAnswer(hub_->port_.c_str(), termstr, answerString);
+        int err = hub_->GetSerialAnswer(hub_->port().c_str(), termstr, answerString);
         if (err == DEVICE_OK) {
             // GetSerialAnswer discards the terminator
             compose.append(answerString);
@@ -172,7 +172,7 @@ class HubStreamAdapter : public Stream {
             do {
                 unsigned char buf;
                 unsigned long read;
-                int err = hub_->ReadFromComPort(hub_->port_.c_str(), &buf, 1, read);
+                int err = hub_->ReadFromComPort(hub_->port().c_str(), &buf, 1, read);
                 if (err == DEVICE_OK && read > 0) {
                     rdbuf_.push_back(buf);
                     return;
