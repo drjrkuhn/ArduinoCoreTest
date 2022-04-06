@@ -40,9 +40,7 @@ int main()
 	string moduleName("ArduinoCoreTestDevice");
 	string deviceName("ArduinoCoreTestDevice-Hub");
 	string portLabel("HubSerial");
-	string portOutput("COM8");
-    //string portLabel("COM8");
-    //string portOutput("HubSerial");
+	string portOutput("COM7");
 	CMMCore core;
 	core.enableStderrLog(true);
 	core.enableDebugLog(true);

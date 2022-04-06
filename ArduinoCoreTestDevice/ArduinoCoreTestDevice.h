@@ -85,12 +85,12 @@ class CArduinoCoreTestDeviceHub : public HubBase<CArduinoCoreTestDeviceHub> {
     //}
     static MMThreadLock& GetLock() { return lock_; }
 
-    bool port(const std::string& port) {
-        return port_.set(port);
+    bool port(const std::string& portname) {
+        return port_.set(portname) == DEVICE_OK;
     }
     const std::string port() const {
         std::string res;
-        port_.getProperty(res);
+        port_.getCached(res);
         return res;
     }
 
