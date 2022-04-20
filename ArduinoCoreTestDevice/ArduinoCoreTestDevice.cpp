@@ -107,9 +107,7 @@ bool CArduinoCoreTestDeviceHub::Busy() { return false; }
 // 2. purge the port
 int CArduinoCoreTestDeviceHub::GetControllerVersion(int& version) {
     version = 0;
-
     try {
-
         std::string fname;
         int fver;
         int error = client_.call<RetT<std::string>>("firmname", fname);
