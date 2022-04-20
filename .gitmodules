@@ -10,3 +10,6 @@
 [submodule "lib/Ardulingua"]
 	path = lib/Ardulingua
 	url = https://github.com/drjrkuhn/Ardulingua.git
+[submodule "lib/FastCRC"]
+	path = lib/FastCRC
+	url = https://github.com/FrankBoesing/FastCRC.git

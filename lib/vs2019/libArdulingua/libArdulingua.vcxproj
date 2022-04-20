@@ -15,6 +15,15 @@
     <ClInclude Include="..\..\Ardulingua\mmsrc\DeviceProp.h" />
     <ClInclude Include="..\..\Ardulingua\mmsrc\DevicePropHelpers.h" />
     <ClInclude Include="..\..\Ardulingua\mmsrc\LocalProp.h" />
+    <ClInclude Include="..\..\Ardulingua\mmsrc\RemoteProp.h" />
+    <ClInclude Include="..\..\Ardulingua\src\common_rdl.h" />
+    <ClInclude Include="..\..\Ardulingua\src\Delegate.h" />
+    <ClInclude Include="..\..\Ardulingua\src\JsonDelegate.h" />
+    <ClInclude Include="..\..\Ardulingua\src\JsonDispatch.h" />
+    <ClInclude Include="..\..\Ardulingua\src\Logger.h" />
+    <ClInclude Include="..\..\Ardulingua\src\Polyfills\std_type_traits.h" />
+    <ClInclude Include="..\..\Ardulingua\src\Polyfills\std_utility.h" />
+    <ClInclude Include="..\..\Ardulingua\src\Polyfills\sys_timing.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stub.cpp" />
@@ -59,13 +68,13 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <TargetName>$(ProjectName)</TargetName>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)lib\Ardulingua\mmsrc</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)lib\Ardulingua\mmsrc;$(SolutionDir)lib\Ardulingua\src;$(SolutionDir)lib\ArduinoJson\src;$(SolutionDir)lib\SlipInPlace\src</IncludePath>
     <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(MM_BUILDDIR)\$(Configuration)\$(Platform)\</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <TargetName>$(ProjectName)</TargetName>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)lib\Ardulingua\mmsrc</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)lib\Ardulingua\mmsrc;$(SolutionDir)lib\Ardulingua\src;$(SolutionDir)lib\ArduinoJson\src;$(SolutionDir)lib\SlipInPlace\src</IncludePath>
     <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(MM_BUILDDIR)\$(Configuration)\$(Platform)\</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">

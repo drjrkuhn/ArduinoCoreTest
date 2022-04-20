@@ -19,6 +19,8 @@
 #include "LocalProp.h"
 #include "ModuleInterface.h"
 #include <ArduinoJson.hpp>
+#include <JsonDelegate.h>
+#include <JsonDispatch.h>
 #include <Common.h>
 #include <cstdio>
 #include <iostream>
@@ -35,6 +37,8 @@
 #define DESERIALIZER json::deserializeJson
 
 namespace json = ARDUINOJSON_NAMESPACE;
+
+
 
 const char* g_DeviceNameArduinoCoreTestDeviceHub = "ArduinoCoreTestDevice-Hub";
 
@@ -79,12 +83,12 @@ MODULE_API void DeleteDevice(MM::Device* pDevice) { delete pDevice; }
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
 CArduinoCoreTestDeviceHub::CArduinoCoreTestDeviceHub()
-    : initialized_(false), serial_(this) {
+    : initialized_(false), serial_(this), client_(serial_, serial_) {
     portAvailable_ = false;
     serial_.setTimeout(5000);
 
     InitializeDefaultErrorMessages();
-    dprop::initCommonErrors("ArduinoCoreTestDevice", 1, [this](int err, const char* txt) {
+    rdl::initCommonErrors("ArduinoCoreTestDevice", 1, [this](int err, const char* txt) {
         SetErrorText(err, txt);
     });
     port_.createLocalProp(this, g_infoPort);
@@ -105,36 +109,24 @@ int CArduinoCoreTestDeviceHub::GetControllerVersion(int& version) {
     version = 0;
 
     try {
-        const size_t pktbuf_size = 512;
-        uint8_t pktbuf[pktbuf_size];
 
-        using encoder = slip::null_encoder;
-        using decoder = slip::null_decoder;
-
-        serial_.clear();
-        json::StaticJsonDocument<200> command;
-        command.add("Version");
-        size_t size  = SERIALIZER(command, pktbuf, pktbuf_size);
-        size_t esize = encoder::encode(pktbuf, pktbuf_size, pktbuf, size);
-        serial_.write(pktbuf, esize);
-
-        size_t nreceived =
-            serial_.readBytesUntil(encoder::end_code(), pktbuf, pktbuf_size);
-        size_t nread = decoder::decode(pktbuf, pktbuf_size, pktbuf, nreceived);
-        json::StaticJsonDocument<200> reply;
-        json::DeserializationError error =
-            DESERIALIZER(reply, (char*)pktbuf, nread);
-        // Test if parsing succeeds.
+        std::string fname;
+        int fver;
+        int error = client_.call<RetT<std::string>>("firmname", fname);
         if (error) {
-            LogMessage("deserializeJson() failed: ", error.c_str());
-            return ERR_FIRMWARE_NOT_FOUND;
+            LogMessage("json-rpc failed: ", error);
+            return error;
         }
-
-        bool found = reply[0] == "MM-Ard"; // serial_.findUntil("MM-Ard", "\r\n");
+        bool found = fname == "MM-Ard";
         if (!found) {
             return ERR_FIRMWARE_NOT_FOUND;
         }
-        version = reply[1];
+        error   = client_.call<RetT<int>>("firmver", fver);
+        if (error) {
+            LogMessage("json-rpc failed: ", error);
+            return error;
+        }
+        version = fver;
         return DEVICE_OK;
     } catch (...) {
         LogMessage("Exception in GetControllerVersion!", false);
@@ -343,7 +335,7 @@ int CArduinoCoreTestDeviceHub::OnTest(MM::PropertyBase* pProp,
                 cout << "Version call error " << ret << ": " << text << endl;
             }
             cout << "=== TESTING DONE ===" << endl;
-            testPassed = false;
+            testPassed = true;
         }
 
         pProp->Set(testPassed ? g_TestResultsPassed : g_TestResultsFailed);

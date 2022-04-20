@@ -20,12 +20,14 @@
 //#include <map>
 #include "DeviceBase.h"
 #include "HubStreamAdapter.h"
+#include <JsonDelegate.h>
+#include <JsonDispatch.h>
 #include <DevicePropHelpers.h>
 #include <DeviceProp.h>
 #include <LocalProp.h>
 #include <string>
 
-using namespace dprop;
+using namespace rdl;
 
 const char* g_deviceNameHub = "ArduinoCoreTestDevice-Hub";
 const char* g_versionProp   = "Version";
@@ -53,6 +55,7 @@ class CArduinoCoreTestDeviceHub : public HubBase<CArduinoCoreTestDeviceHub> {
 
     using StreamAdapter = HubStreamAdapter<CArduinoCoreTestDeviceHub>;
     friend StreamAdapter;
+    using ClientT = jsonclient<StreamAdapter, std::string, BUFFER_SIZE>;
 
  public:
     CArduinoCoreTestDeviceHub();
@@ -102,6 +105,7 @@ class CArduinoCoreTestDeviceHub : public HubBase<CArduinoCoreTestDeviceHub> {
     int version_;
     static MMThreadLock lock_;
     StreamAdapter serial_;
+    ClientT client_;
 };
 
 #endif //_ArduinoCoreTestDevice_H_

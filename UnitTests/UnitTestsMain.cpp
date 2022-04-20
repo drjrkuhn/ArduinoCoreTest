@@ -59,7 +59,7 @@ int main()
 
 		cout << "==== " << hubLabel << " Properties ====" << endl;
         for (auto propName : core.getDevicePropertyNames(hubLabel.c_str())) {
-            cout << dprop::ToString(core.getPropertyType(hubLabel.c_str(), propName.c_str())) << " " << propName;
+            cout << rdl::ToString(core.getPropertyType(hubLabel.c_str(), propName.c_str())) << " " << propName;
             cout << " = " << core.getProperty(hubLabel.c_str(), propName.c_str()) << endl;
 		}
 

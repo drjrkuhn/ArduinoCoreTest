@@ -51,7 +51,7 @@ static const std::string g_stringConst    = "string";
 static const char* g_charPtrConst         = "charPtr";
 
 void Test_ToString() {
-    using namespace dprop;
+    using namespace rdl;
     using namespace std;
     cout << "\n======== Test_ToString" << endl;
 
@@ -72,7 +72,7 @@ void Test_ToString() {
 
 void Test_mm_property_type_of() {
     using namespace std;
-    using namespace dprop;
+    using namespace rdl;
     cout << "\n======== Test_mm_property_type_of" << endl;
     cout << "bool\t\t" << ToString(MMPropertyType_of(g_boolConst)) << endl;
     cout << "signed char\t" << ToString(MMPropertyType_of(g_charConst)) << endl;
@@ -91,7 +91,7 @@ void Test_mm_property_type_of() {
 
 void Test_Parse() {
     using namespace std;
-    using namespace dprop;
+    using namespace rdl;
     cout << "\n======== Test_Parse" << endl;
     cout << "bool\t\t" << Parse<bool>(ToString(g_boolConst)) << endl;
     cout << "signed char\t" << (int)Parse<signed char>(ToString(g_charConst)) << endl;
@@ -109,7 +109,7 @@ void Test_Parse() {
 
 void Test_Assign() {
     using namespace std;
-    using namespace dprop;
+    using namespace rdl;
     cout << "\n======== Test_Assign" << endl;
 
     MM::IntegerProperty intProp("Integer roperty");
