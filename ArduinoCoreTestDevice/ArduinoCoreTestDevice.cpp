@@ -110,7 +110,7 @@ int CArduinoCoreTestDeviceHub::GetControllerVersion(int& version) {
     try {
         std::string fname;
         int fver;
-        int error = client_.call<RetT<std::string>>("firmname", fname);
+        int error = client_.call<RetT<std::string>>("fname?", fname);
         if (error) {
             LogMessage("json-rpc failed: ", error);
             return error;
@@ -119,7 +119,7 @@ int CArduinoCoreTestDeviceHub::GetControllerVersion(int& version) {
         if (!found) {
             return ERR_FIRMWARE_NOT_FOUND;
         }
-        error   = client_.call<RetT<int>>("firmver", fver);
+        error   = client_.call<RetT<int>,std::string>("fver?", fver, fname);
         if (error) {
             LogMessage("json-rpc failed: ", error);
             return error;

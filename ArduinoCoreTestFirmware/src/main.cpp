@@ -24,9 +24,13 @@ const int g_firmware_version = 1;
 
 using DispatchMapT = std::unordered_map<std::string, rdl::json_delegate>;
 
+int firmware_version(const char* name) {
+    return (g_firmware_name == name) ? g_firmware_version : -1;
+}
+
 DispatchMapT dispatch_map {
-    {"firmname", json_delegate::of<RetT<String>>::create([](){return g_firmware_name;})},
-    {"firmver", json_delegate::of<RetT<int>>::create([](){return g_firmware_version;})}
+    {"fname?", json_delegate::of<RetT<String>>::create([](){return g_firmware_name;})},
+    {"fver?", json_delegate::of<RetT<int>,const char*>::create<firmware_version>()}
 };
 
 using ServerT = jsonserver<Stream, DispatchMapT, std::string, BUFFER_SIZE, LoggerT>;
@@ -41,8 +45,6 @@ void setup() {
     while (!Serial) {
         ; // wait for serial port to connect. Needed for native USB port only
     }
-
-    logger.println();
     logger.println("log started for ArduinoCoreTestFirmware");
 }
 
