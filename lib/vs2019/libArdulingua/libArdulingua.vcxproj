@@ -16,6 +16,7 @@
     <ClInclude Include="..\..\Ardulingua\mmsrc\DevicePropHelpers.h" />
     <ClInclude Include="..\..\Ardulingua\mmsrc\LocalProp.h" />
     <ClInclude Include="..\..\Ardulingua\mmsrc\RemoteProp.h" />
+    <ClInclude Include="..\..\Ardulingua\mmsrc\StreamAdapter.h" />
     <ClInclude Include="..\..\Ardulingua\src\common_rdl.h" />
     <ClInclude Include="..\..\Ardulingua\src\Delegate.h" />
     <ClInclude Include="..\..\Ardulingua\src\JsonDelegate.h" />
@@ -24,6 +25,7 @@
     <ClInclude Include="..\..\Ardulingua\src\Polyfills\std_type_traits.h" />
     <ClInclude Include="..\..\Ardulingua\src\Polyfills\std_utility.h" />
     <ClInclude Include="..\..\Ardulingua\src\Polyfills\sys_timing.h" />
+    <ClInclude Include="..\..\Ardulingua\src\SlipInPlace.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stub.cpp" />

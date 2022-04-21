@@ -19,12 +19,13 @@
 #define NOMINMAX
 //#include <map>
 #include "DeviceBase.h"
-#include "HubStreamAdapter.h"
+#include <StreamAdapter.h>
 #include <JsonDelegate.h>
 #include <JsonDispatch.h>
 #include <DevicePropHelpers.h>
 #include <DeviceProp.h>
 #include <LocalProp.h>
+#include <Stream.h> // for arduino::Stream
 #include <string>
 
 using namespace rdl;
@@ -53,7 +54,7 @@ class CArduinoCoreTestDeviceHub : public HubBase<CArduinoCoreTestDeviceHub> {
     LocalProp<std::string, HUB> stringProp_;
     //LocalProp<double, HUB> doubleProp_;
 
-    using StreamAdapter = HubStreamAdapter<CArduinoCoreTestDeviceHub>;
+    using StreamAdapter = HubStreamAdapter<CArduinoCoreTestDeviceHub, arduino::Stream>;
     friend StreamAdapter;
     using ClientT = jsonclient<StreamAdapter, std::string, BUFFER_SIZE>;
 

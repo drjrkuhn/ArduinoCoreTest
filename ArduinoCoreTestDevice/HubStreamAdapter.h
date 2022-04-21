@@ -8,9 +8,9 @@
 #define RDBUF_DEQUEU_SIZE 1
 
 template <class HUB>
-class HubStreamAdapter : public Stream {
+class OLDHubStreamAdapter : public Stream {
  public:
-    HubStreamAdapter(HUB* hub) : hub_(hub) {}
+    OLDHubStreamAdapter(HUB* hub) : hub_(hub) {}
 
     virtual size_t write(const uint8_t byte) override { return write(&byte, 1); }
 

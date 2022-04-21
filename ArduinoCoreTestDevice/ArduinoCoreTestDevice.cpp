@@ -91,7 +91,7 @@ CArduinoCoreTestDeviceHub::CArduinoCoreTestDeviceHub()
     rdl::initCommonErrors("ArduinoCoreTestDevice", 1, [this](int err, const char* txt) {
         SetErrorText(err, txt);
     });
-    port_.createLocalProp(this, g_infoPort);
+    port_.create(this, g_infoPort);
 }
 
 CArduinoCoreTestDeviceHub::~CArduinoCoreTestDeviceHub() { Shutdown(); }
