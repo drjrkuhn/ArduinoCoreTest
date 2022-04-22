@@ -46,13 +46,13 @@ const auto g_infoLongProp = PropInfo<long>::build(g_longProp, 100000);
 
 class CArduinoCoreTestDeviceHub : public HubBase<CArduinoCoreTestDeviceHub> {
  protected:
-    using HUB = CArduinoCoreTestDeviceHub;
-    LocalProp<std::string, HUB> port_;
-    LocalProp<long, HUB> versionProp_;
-    LocalProp<int, HUB> intProp_;
-    LocalProp<long, HUB> longProp_;
-    LocalProp<std::string, HUB> stringProp_;
-    //LocalProp<double, HUB> doubleProp_;
+    using HubT = CArduinoCoreTestDeviceHub;
+    LocalProp<HubT, std::string> port_;
+    LocalProp<HubT, long> versionProp_;
+    LocalProp<HubT, int> intProp_;
+    LocalProp<HubT, long> longProp_;
+    LocalProp<HubT, std::string> stringProp_;
+    //LocalProp<double, HubT> doubleProp_;
 
     using StreamAdapter = HubStreamAdapter<CArduinoCoreTestDeviceHub, arduino::Stream>;
     friend StreamAdapter;

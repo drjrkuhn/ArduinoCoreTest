@@ -96,7 +96,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ArduinoCoreTestDevice.h" />
-    <ClInclude Include="HubStreamAdapter.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="$(MMDEV_SRCROOT)\MMDevice\MMDevice-SharedRuntime.vcxproj">
