@@ -15,6 +15,7 @@
     <ClInclude Include="..\..\Ardulingua\mmsrc\DeviceProp.h" />
     <ClInclude Include="..\..\Ardulingua\mmsrc\DevicePropHelpers.h" />
     <ClInclude Include="..\..\Ardulingua\mmsrc\LocalProp.h" />
+    <ClInclude Include="..\..\Ardulingua\mmsrc\PropInfo.h" />
     <ClInclude Include="..\..\Ardulingua\mmsrc\RemoteProp.h" />
     <ClInclude Include="..\..\Ardulingua\mmsrc\StreamAdapter.h" />
     <ClInclude Include="..\..\Ardulingua\src\common_rdl.h" />

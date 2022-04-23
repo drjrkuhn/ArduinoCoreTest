@@ -63,6 +63,9 @@
     <ClInclude Include="..\..\Ardulingua\src\SlipInPlace.h">
       <Filter>src headers</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Ardulingua\mmsrc\PropInfo.h">
+      <Filter>mmsrc headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stub.cpp">

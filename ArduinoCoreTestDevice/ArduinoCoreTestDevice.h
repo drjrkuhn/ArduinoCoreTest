@@ -38,7 +38,7 @@ const char* g_longProp   = "longProp";
 const char* g_stringProp = "stringProp";
 //const char* g_doubleProp = "doubleProp";
 
-const auto g_infoPort     = PropInfo<std::string>::build(MM::g_Keyword_Port, "Undefined").withIsPreInit();
+const auto g_infoPort     = PropInfo<std::string>::build(MM::g_Keyword_Port, "Undefined").preInit();
 const auto g_infoVersion  = PropInfo<long>::build(g_versionProp, 0);
 const auto g_infoIntProp  = PropInfo<int>::build(g_intProp, 100);
 const auto g_infoLongProp = PropInfo<long>::build(g_longProp, 100000);
