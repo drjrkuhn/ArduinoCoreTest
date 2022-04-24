@@ -19,13 +19,14 @@
 #define NOMINMAX
 //#include <map>
 #include "DeviceBase.h"
-#include <StreamAdapter.h>
+#include <DeviceProp.h>
+#include <DevicePropHelpers.h>
 #include <JsonDelegate.h>
 #include <JsonDispatch.h>
-#include <DevicePropHelpers.h>
-#include <DeviceProp.h>
 #include <LocalProp.h>
+#include <RemoteProp.h>
 #include <Stream.h> // for arduino::Stream
+#include <StreamAdapter.h>
 #include <string>
 
 using namespace rdl;
@@ -39,6 +40,7 @@ const char* g_stringProp = "stringProp";
 //const char* g_doubleProp = "doubleProp";
 
 const auto g_infoPort     = PropInfo<std::string>::build(MM::g_Keyword_Port, "Undefined").preInit();
+const auto g_infoFoo      = PropInfo<long>::build("foo").withBrief("foo").sequencable();
 const auto g_infoVersion  = PropInfo<long>::build(g_versionProp, 0);
 const auto g_infoIntProp  = PropInfo<int>::build(g_intProp, 100);
 const auto g_infoLongProp = PropInfo<long>::build(g_longProp, 100000);
@@ -48,6 +50,7 @@ class CArduinoCoreTestDeviceHub : public HubBase<CArduinoCoreTestDeviceHub> {
  protected:
     using HubT = CArduinoCoreTestDeviceHub;
     LocalProp<HubT, std::string> port_;
+    SimpleRemnoteProp<HubT, long> foo_;
     LocalProp<HubT, long> versionProp_;
     LocalProp<HubT, int> intProp_;
     LocalProp<HubT, long> longProp_;
@@ -93,7 +96,7 @@ class CArduinoCoreTestDeviceHub : public HubBase<CArduinoCoreTestDeviceHub> {
         return port_.SetProperty(portname) == DEVICE_OK;
     }
 
-    const std::string port() const {
+    const std::string port() {
         std::string res;
         port_.GetCachedProperty(res);
         return res;

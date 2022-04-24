@@ -109,8 +109,8 @@ int CArduinoCoreTestDeviceHub::GetControllerVersion(int& version) {
     version = 0;
     try {
         std::string fname;
-        int fver;
-        int error = client_.call<RetT<std::string>>("fname?", fname);
+        int fver = 0;
+        int error = client_.call_get<RetT<std::string>>("fname?", fname);
         if (error) {
             LogMessage("json-rpc failed: ", error);
             return error;
@@ -119,7 +119,7 @@ int CArduinoCoreTestDeviceHub::GetControllerVersion(int& version) {
         if (!found) {
             return ERR_FIRMWARE_NOT_FOUND;
         }
-        error   = client_.call<RetT<int>,std::string>("fver?", fver, fname);
+        error   = client_.call_get<RetT<int>,std::string>("fver?", fver, fname);
         if (error) {
             LogMessage("json-rpc failed: ", error);
             return error;
@@ -232,6 +232,9 @@ int CArduinoCoreTestDeviceHub::Initialize() {
 
     if (version_ < g_Min_MMVersion || version_ > g_Max_MMVersion)
         return ERR_VERSION_MISMATCH;
+
+    ret = foo_.create(this, &client_, g_infoFoo);
+    if (DEVICE_OK != ret) return ret;
 
     CPropertyAction* pAct =
         new CPropertyAction(this, &CArduinoCoreTestDeviceHub::OnVersion);
