@@ -322,6 +322,16 @@ int CArduinoCoreTestDeviceHub::OnTest(MM::PropertyBase* pProp,
         msg << "OnTest MM::AfterSet, Prop: " << val;
         LogMessage(msg.str());
 
+        ClearPropertySequence(foo_.name().c_str());
+        for (long seq = 0; seq < 12; seq++) {
+            std::string seqstr = ToString(seq);
+            AddToPropertySequence(foo_.name().c_str(), seqstr.c_str());
+        }
+        SendPropertySequence(foo_.name().c_str());
+        StartPropertySequence(foo_.name().c_str());
+        StopPropertySequence(foo_.name().c_str());
+
+
         bool testPassed = false;
         if (val == g_TestResultsRun) {
             cout << "=== TESTING ===" << endl;
