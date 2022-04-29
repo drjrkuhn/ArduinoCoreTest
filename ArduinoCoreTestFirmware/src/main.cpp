@@ -3,15 +3,18 @@
 #define ARDUINOJSON_ENABLE_ARDUINO_STREAM 1
 #include <Logger.h>
 #include <JsonDispatch.h>
+#include <ServerProperty.h>
 #include <map>
 #include <unordered_map>
-#include <string>
-#include <utility>
 
 using namespace rdl;
 
+using StringT = String; // should work equally well for std::string and aruindo String
+using StreamT = decltype(Serial);
+using DispatchMapT = std::unordered_map<StringT, json_stub, string_hash<StringT>>;
+
 #if defined(USB_DUAL_SERIAL) || defined(USB_TRIPLE_SERIAL)
-    using LoggerT = logger_base<Stream, std::string>;
+    using LoggerT = logger_base<Stream, StringT>;
     LoggerT logger(&SerialUSB1);
     void logger_begin() { SerialUSB1.begin(9600); while (!SerialUSB1) /*noop*/; }
 #else
@@ -21,178 +24,66 @@ using namespace rdl;
     void logger_begin() {}
 #endif
 
-String g_firmware_name("MM-Ard");
+StringT g_firmware_name("MM-Ardulingua");
 const int g_firmware_version = 1;
 
-using DispatchMapT = std::unordered_map<std::string, rdl::json_stub>;
-
-int firmware_version(String name) {
+/** 
+ * Firmware double check. 
+ * Caller has to pass the correct firmware name to get a positive firmware version number.
+ * Allows for two-way firmware check with a single RPC call.
+ * 
+ * Drivers can also call "?fname" to get the name first, then call get_firmware_version.
+ */
+int get_firmware_version(StringT name) {
     return (g_firmware_name == name) ? g_firmware_version : -1;
 }
 
-
-template<typename T, long MAX_SIZE=64>
-class sequence {
-  public:
-    
-    sequence(const char* _brief, const T _initial) 
-    : brief_(_brief), value_(_initial), size_(0), started_(false) {}
-
-    T get() const { 
-        logger.print("SEQT get "); logger.print(brief_.c_str()); logger.print("() -> "); logger.println(value_);
-        return value_;
-        }
-
-    void set(const T value) {
-        value_ = value; 
-        logger.print("SEQT set ") ; logger.print(brief_.c_str()) ; logger.print("(") ; logger.print(value_) ; logger.println(")");
-        }
-
-    long max_size() {
-        logger.print("SEQT max_size ") ; logger.print(brief_.c_str()) ; logger.print("() -> ") ; logger.println(max_size_);
-        return max_size_;
-    }
-
-    long size() {
-        logger.print("SEQT size ") ; logger.print(brief_.c_str()) ; logger.print("() -> ") ; logger.println(size_);
-        return size_;
-    }
-
-    void clear() {
-        logger.print("SEQT clear ") ; logger.println(brief_.c_str());
-        size_ = 0;
-    }
-
-    void add(const T value) {
-        if (size_ >= max_size_) {
-            logger.print("SEQT add ") ; logger.print(brief_.c_str()) ; logger.println(" ERROR: MAXSIZE reached");
-            return;
-        }
-        logger.print("SEQT add ") ; logger.print(brief_.c_str()) ; logger.print("["); logger.print(size_);
-        logger.print("](") ; logger.print(value) ; logger.println(")");
-        values_[size_++] = value;
-    }
-
-    void start() {
-        logger.print("SEQT start ") ; logger.println(brief_.c_str());
-        started_ = true;
-    }
-
-    void stop() {
-        logger.print("SEQT stop ") ; logger.println(brief_.c_str());
-        started_ = false;
-    }
-
-    std::string message(const char opcode)  {
-        std::string res(1,opcode);
-        res.append(brief_);
-        return res;
-    }
-
-    int add_to(DispatchMapT & map);
-
-  protected:
-
-    std::string brief_;
-    T value_;
-    const long max_size_=MAX_SIZE;
-    long size_;  
-    volatile bool started_;
-    T values_[MAX_SIZE];
-};
-
-
-// template<typename T, class S= sequence<T>>
-// int add_to(DispatchMapT& map, S* obj) {
-//     using PairT = DispatchMapT::value_type;
-//     int startsize = map.size();
-//     map.emplace(PairT(obj->message('?'), json_delegate<RetT<T>>::template create<S,&S::get>(obj).stub()));
-//     map.emplace(PairT(obj->message('!'), json_delegate<RetT<void>, T>::template create<S,&S::set>(obj).stub()));
-//     map.emplace(PairT(obj->message('^'), json_delegate<RetT<long>>::template create<S,&S::max_size>(obj).stub()));
-//     map.emplace(PairT(obj->message('#'), json_delegate<RetT<long>>::template create<S,&S::size>(obj).stub()));
-//     map.emplace(PairT(obj->message('0'), json_delegate<RetT<void>>::template create<S,&S::clear>(obj).stub()));
-//     map.emplace(PairT(obj->message('+'), json_delegate<RetT<void>,T>::template create<S,&S::add>(obj).stub()));
-//     map.emplace(PairT(obj->message('*'), json_delegate<RetT<void>>::template create<S,&S::start>(obj).stub()));
-//     map.emplace(PairT(obj->message('~'), json_delegate<RetT<void>>::template create<S,&S::stop>(obj).stub()));
-//     return map.size() - startsize;
-// }
-
-template<typename T, long M>
-int sequence<T,M>::add_to(DispatchMapT& map) {
-    using PairT = DispatchMapT::value_type;
-    using S=sequence<T,M>;
-    int startsize = map.size();
-    map.emplace(PairT(message('?'), json_delegate<RetT<T>>::template create<S,&S::get>(this).stub()));
-    map.emplace(PairT(message('!'), json_delegate<RetT<void>, T>::template create<S,&S::set>(this).stub()));
-    map.emplace(PairT(message('^'), json_delegate<RetT<long>>::template create<S,&S::max_size>(this).stub()));
-    map.emplace(PairT(message('#'), json_delegate<RetT<long>>::template create<S,&S::size>(this).stub()));
-    map.emplace(PairT(message('0'), json_delegate<RetT<void>>::template create<S,&S::clear>(this).stub()));
-    map.emplace(PairT(message('+'), json_delegate<RetT<void>,T>::template create<S,&S::add>(this).stub()));
-    map.emplace(PairT(message('*'), json_delegate<RetT<void>>::template create<S,&S::start>(this).stub()));
-    map.emplace(PairT(message('~'), json_delegate<RetT<void>>::template create<S,&S::stop>(this).stub()));
-    return map.size() - startsize;
-}
-
-
+// Start the dispatch map with some simple properties.
+// Other properties will be added in setup() below
 DispatchMapT dispatch_map {
-    {"fname?", json_delegate<RetT<String>>::create([](){return g_firmware_name;}).stub()},
-    {"fver?", json_delegate<RetT<int>,String>::create<firmware_version>().stub()},
+    {"?fname", json_delegate<RetT<StringT>>::create([](){return g_firmware_name;}).stub()},
+    {"?fver", json_delegate<RetT<int>,StringT>::create<get_firmware_version>().stub()},
 };
 
-// long foo = 10;;
-// constexpr size_t FOOSIZE = 200;
-// long fooarray[FOOSIZE];
-// size_t nfoo = 0;
-// bool foo_started = false;
 
-     /*      {"?prop", call<int>(     [&prop_]()->int            { return prop_; })},
-     *      {"!prop", call<void,int>([&prop_](int val)          { prop_ = val; })},
-     *      {"^prop", call<int>(     [&pseq_max_]()->int        { return pseq_max_; })},
-     *      {"#prop", call<int>(     [&pseq_count_]()->int      { return pseq_count_; })},
-     *      {"0prop", call<int>(     [&pseq_count_]()->int      { pseq_count_ = 0; return 0; })},
-     *      {"+prop", call<void,int>([&pseq_,&acount_](int val) { pseq_[pseq_count_++] = val; })}
-    */
+simple_prop_base<int,StringT,32> foo("foo", 1, true);
 
-// template<typename T, size_t N>
-// struct version_t {
-//     version_t(T v) : v_(v) {};
+simple_prop_base<float,StringT,32> bar0("bar0", 1.1, true);
+simple_prop_base<float,StringT,32> bar1("bar1", 2.2, true);
+simple_prop_base<float,StringT,32> bar2("bar2", 3.3, true);
+simple_prop_base<float,StringT,32> bar3("bar3", 4.4, true);
 
-//     T get(void) const {
-//         return v_;
-//     }
+decltype(bar0)::RootT* all_bars[] = {&bar0, &bar1, &bar2, &bar3};
 
-//     T v_;
-// };
+channel_prop_base<float, StringT, 4> bars("bar", all_bars, sizeof(all_bars));
 
-// typedef version_t<int,10> vint;
-// vint version(1);
 
-// auto stub = json_delegate<int>::create<vint,&vint::get>(&version).stub();
-
-sequence<long,128> foo("foo", 100);
-const int dummy_addfoo = foo.add_to(dispatch_map);
-
-using ServerT = jsonserver<Stream, DispatchMapT, std::string, BUFFER_SIZE, LoggerT>;
+// The server
+using ServerT = json_server<StreamT, StreamT, DispatchMapT, StringT, 512, LoggerT>;
 ServerT server(Serial, Serial, dispatch_map);
+
+void setup_dispatch() {
+    add_to(dispatch_map, foo, foo.sequencable(), foo.read_only());
+    add_to(dispatch_map, bars, bars.sequencable(-1), bars.read_only(-1));
+}
 
 void setup() {
 
     Serial.begin(9600);
-    Serial.setTimeout(5000); // longer timeout on virtual machine
+    Serial.setTimeout(2000); // longer timeout on virtual machine
+    while (!Serial) {
+        ; // wait for serial port to connect. Needed for native USB port only
+    }
     logger_begin();
-    // add_to<long,SequenceT<long>>(dispatch_map, &foo);
+    server.logger(logger);
+    logger.println("log started for ArduinoCoreTestFirmware");
 
+    setup_dispatch();
     logger.println("Map methods:");
     for (auto p : dispatch_map) {
         logger.println(p.first.c_str());
     }
 
-    server.logger(logger);
-
-    while (!Serial) {
-        ; // wait for serial port to connect. Needed for native USB port only
-    }
-    logger.println("log started for ArduinoCoreTestFirmware");
 }
 
 void loop() {

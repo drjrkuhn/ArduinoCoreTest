@@ -40,7 +40,7 @@ int main()
 	string moduleName("ArduinoCoreTestDevice");
 	string deviceName("ArduinoCoreTestDevice-Hub");
 	string portLabel("HubSerial");
-	string portOutput("COM7");
+	string portOutput("COM8");
 	CMMCore core;
 	core.enableStderrLog(true);
 	core.enableDebugLog(true);
@@ -62,8 +62,6 @@ int main()
             cout << rdl::ToString(core.getPropertyType(hubLabel.c_str(), propName.c_str())) << " " << propName;
             cout << " = " << core.getProperty(hubLabel.c_str(), propName.c_str()) << endl;
 		}
-
-		//core.initializeAllDevices();
 
 		// Run unit tests
 		core.setProperty(hubLabel.c_str(), "Test", "Run");

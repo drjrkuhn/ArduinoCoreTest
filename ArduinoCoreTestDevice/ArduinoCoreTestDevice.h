@@ -28,6 +28,7 @@
 #include <Stream.h> // for arduino::Stream
 #include <StreamAdapter.h>
 #include <string>
+#include <Logger.h>
 
 using namespace rdl;
 
@@ -57,9 +58,11 @@ class CArduinoCoreTestDeviceHub : public HubBase<CArduinoCoreTestDeviceHub> {
     LocalProp<HubT, std::string> stringProp_;
     //LocalProp<double, HubT> doubleProp_;
 
+    using PrinterT = DeviceLog_Printer<CArduinoCoreTestDeviceHub>;
+    using LoggerT  = logger_base<std::string>;
     using StreamAdapter = HubStreamAdapter<CArduinoCoreTestDeviceHub, arduino::Stream>;
     friend StreamAdapter;
-    using ClientT = jsonclient<StreamAdapter, std::string, BUFFER_SIZE>;
+    using ClientT = json_client<StreamAdapter, StreamAdapter, std::string, JSONRCP_BUFFER_SIZE, LoggerT>;
 
  public:
     CArduinoCoreTestDeviceHub();
@@ -111,6 +114,9 @@ class CArduinoCoreTestDeviceHub : public HubBase<CArduinoCoreTestDeviceHub> {
     static MMThreadLock lock_;
     StreamAdapter serial_;
     ClientT client_;
+
+    PrinterT printer_;
+    LoggerT logger_;
 };
 
 #endif //_ArduinoCoreTestDevice_H_

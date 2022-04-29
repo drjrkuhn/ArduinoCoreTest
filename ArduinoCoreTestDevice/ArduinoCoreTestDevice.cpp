@@ -18,13 +18,14 @@
 #include "DevicePropHelpers.h"
 #include "LocalProp.h"
 #include "ModuleInterface.h"
+#include "Logger.h"
 #include <ArduinoJson.hpp>
+#include <Common.h>
 #include <JsonDelegate.h>
 #include <JsonDispatch.h>
-#include <Common.h>
+#include <SlipInPlace.h>
 #include <cstdio>
 #include <iostream>
-#include <SlipInPlace.h>
 #include <sstream>
 
 #ifdef WIN32
@@ -38,8 +39,6 @@
 
 namespace json = ARDUINOJSON_NAMESPACE;
 
-
-
 const char* g_DeviceNameArduinoCoreTestDeviceHub = "ArduinoCoreTestDevice-Hub";
 
 // Global info about the state of the ArduinoCoreTestDevice.  This should be
@@ -52,7 +51,7 @@ const char* g_TestResultsRun     = "Run";
 const char* g_TestResultsFailed  = "Failed";
 const char* g_TestResultsPassed  = "Passed";
 
-const char* g_On = "On";
+const char* g_On  = "On";
 const char* g_Off = "Off";
 
 // static lock
@@ -91,6 +90,11 @@ CArduinoCoreTestDeviceHub::CArduinoCoreTestDeviceHub()
     rdl::initCommonErrors("ArduinoCoreTestDevice", 1, [this](int err, const char* txt) {
         SetErrorText(err, txt);
     });
+
+    printer_ = PrinterT(this, true);
+    logger_  = LoggerT(&printer_);
+    client_.logger(logger_);
+
     port_.create(this, g_infoPort);
 }
 
@@ -109,17 +113,17 @@ int CArduinoCoreTestDeviceHub::GetControllerVersion(int& version) {
     version = 0;
     try {
         std::string fname;
-        int fver = 0;
-        int error = client_.call_get<RetT<std::string>>("fname?", fname);
+        int fver  = 0;
+        int error = client_.call_get<RetT<std::string>>("?fname", fname);
         if (error) {
             LogMessage("json-rpc failed: ", error);
             return error;
         }
-        bool found = fname == "MM-Ard";
+        bool found = fname == "MM-Ardulingua";
         if (!found) {
             return ERR_FIRMWARE_NOT_FOUND;
         }
-        error   = client_.call_get<RetT<int>,std::string>("fver?", fver, fname);
+        error = client_.call_get<RetT<int>, std::string>("?fver", fver, fname);
         if (error) {
             LogMessage("json-rpc failed: ", error);
             return error;
@@ -132,8 +136,8 @@ int CArduinoCoreTestDeviceHub::GetControllerVersion(int& version) {
     return ERR_FIRMWARE_NOT_FOUND;
 }
 
-bool CArduinoCoreTestDeviceHub::SupportsDeviceDetection(void) { 
-    return true; 
+bool CArduinoCoreTestDeviceHub::SupportsDeviceDetection(void) {
+    return true;
 }
 
 MM::DeviceDetectionStatus CArduinoCoreTestDeviceHub::DetectDevice(void) {
@@ -198,13 +202,13 @@ MM::DeviceDetectionStatus CArduinoCoreTestDeviceHub::DetectDevice(void) {
 
     return result;
 }
- 
+
 int CArduinoCoreTestDeviceHub::Initialize() {
     // Name
     try {
         // Simple name property
         ASSERT_OK(CreateProperty(MM::g_Keyword_Name, g_deviceNameHub, MM::String, true));
-        
+
     } catch (DeviceResultException deviceError) {
         LogMessage(deviceError.format(this));
         //std::string lastTrans = getLastLog();
@@ -318,21 +322,11 @@ int CArduinoCoreTestDeviceHub::OnTest(MM::PropertyBase* pProp,
     } else if (pAct == MM::AfterSet) {
         msg.clear();
         string val;
+        bool testPassed = false;
         pProp->Get(val);
         msg << "OnTest MM::AfterSet, Prop: " << val;
         LogMessage(msg.str());
 
-        ClearPropertySequence(foo_.name().c_str());
-        for (long seq = 0; seq < 12; seq++) {
-            std::string seqstr = ToString(seq);
-            AddToPropertySequence(foo_.name().c_str(), seqstr.c_str());
-        }
-        SendPropertySequence(foo_.name().c_str());
-        StartPropertySequence(foo_.name().c_str());
-        StopPropertySequence(foo_.name().c_str());
-
-
-        bool testPassed = false;
         if (val == g_TestResultsRun) {
             cout << "=== TESTING ===" << endl;
             int version;
@@ -345,6 +339,16 @@ int CArduinoCoreTestDeviceHub::OnTest(MM::PropertyBase* pProp,
                 GetErrorText(ret, text);
                 cout << "Version call error " << ret << ": " << text << endl;
             }
+
+            ClearPropertySequence(foo_.name().c_str());
+            for (long seq = 0; seq < 12; seq++) {
+                std::string seqstr = ToString(seq);
+                AddToPropertySequence(foo_.name().c_str(), seqstr.c_str());
+            }
+            SendPropertySequence(foo_.name().c_str());
+            StartPropertySequence(foo_.name().c_str());
+            StopPropertySequence(foo_.name().c_str());
+
             cout << "=== TESTING DONE ===" << endl;
             testPassed = true;
         }
