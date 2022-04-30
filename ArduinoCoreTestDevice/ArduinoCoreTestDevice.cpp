@@ -13,17 +13,17 @@
 //
 
 #include "ArduinoCoreTestDevice.h"
-#include "DeviceError.h"
-#include "DeviceProp.h"
-#include "DevicePropHelpers.h"
-#include "LocalProp.h"
-#include "ModuleInterface.h"
-#include "Logger.h"
+#include <rdlmm/DeviceError.h>
+#include <rdlmm/DeviceProp.h>
+#include <rdlmm/DevicePropHelpers.h>
+#include <rdlmm/LocalProp.h>
+#include <ModuleInterface.h>
+#include <rdl/Logger.h>
 #include <ArduinoJson.hpp>
 #include <Common.h>
-#include <JsonDelegate.h>
-#include <JsonDispatch.h>
-#include <SlipInPlace.h>
+#include <rdl/JsonDelegate.h>
+#include <rdl/JsonDispatch.h>
+#include <rdl/SlipInPlace.h>
 #include <cstdio>
 #include <iostream>
 #include <sstream>
@@ -87,13 +87,12 @@ CArduinoCoreTestDeviceHub::CArduinoCoreTestDeviceHub()
     serial_.setTimeout(5000);
 
     InitializeDefaultErrorMessages();
-    rdl::initCommonErrors("ArduinoCoreTestDevice", 1, [this](int err, const char* txt) {
+    rdlmm::initCommonErrors("ArduinoCoreTestDevice", 1, [this](int err, const char* txt) {
         SetErrorText(err, txt);
     });
 
-    printer_ = PrinterT(this, true);
-    logger_  = LoggerT(&printer_);
-    client_.logger(logger_);
+    logger_  = LoggerT(this, true);
+    client_.logger(&logger_);
 
     port_.create(this, g_infoPort);
 }
@@ -114,7 +113,7 @@ int CArduinoCoreTestDeviceHub::GetControllerVersion(int& version) {
     try {
         std::string fname;
         int fver  = 0;
-        int error = client_.call_get<RetT<std::string>>("?fname", fname);
+        int error = client_.call_get<rdl::RetT<std::string>>("?fname", fname);
         if (error) {
             LogMessage("json-rpc failed: ", error);
             return error;
@@ -123,7 +122,7 @@ int CArduinoCoreTestDeviceHub::GetControllerVersion(int& version) {
         if (!found) {
             return ERR_FIRMWARE_NOT_FOUND;
         }
-        error = client_.call_get<RetT<int>, std::string>("?fver", fver, fname);
+        error = client_.call_get<rdl::RetT<int>, std::string>("?fver", fver, fname);
         if (error) {
             LogMessage("json-rpc failed: ", error);
             return error;

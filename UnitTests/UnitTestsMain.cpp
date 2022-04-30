@@ -12,8 +12,8 @@
 #include <deque>
 
 #include <iostream>
+#include <rdlmm/DevicePropHelpers.h>
 
-#include "DevicePropHelpers.h"
 
 inline std::string getPropertyTypeVerbose(MM::PropertyType t)
 {
@@ -59,7 +59,7 @@ int main()
 
 		cout << "==== " << hubLabel << " Properties ====" << endl;
         for (auto propName : core.getDevicePropertyNames(hubLabel.c_str())) {
-            cout << rdl::ToString(core.getPropertyType(hubLabel.c_str(), propName.c_str())) << " " << propName;
+            cout << rdlmm::ToString(core.getPropertyType(hubLabel.c_str(), propName.c_str())) << " " << propName;
             cout << " = " << core.getProperty(hubLabel.c_str(), propName.c_str()) << endl;
 		}
 

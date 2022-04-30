@@ -1,9 +1,10 @@
 #include <Arduino.h>
 
 #define ARDUINOJSON_ENABLE_ARDUINO_STREAM 1
-#include <Logger.h>
-#include <JsonDispatch.h>
-#include <ServerProperty.h>
+#include <Ardulingua.h>
+// #include <rdl/Logger.h>
+// #include <rdl/JsonDispatch.h>
+// #include <rdl/ServerProperty.h>
 #include <map>
 #include <unordered_map>
 
@@ -11,16 +12,13 @@ using namespace rdl;
 
 using StringT = String; // should work equally well for std::string and aruindo String
 using StreamT = decltype(Serial);
-using DispatchMapT = std::unordered_map<StringT, json_stub, string_hash<StringT>>;
+using DispatchMapT = std::unordered_map<StringT, json_stub, sys::string_hash>;
 
 #if defined(USB_DUAL_SERIAL) || defined(USB_TRIPLE_SERIAL)
-    using LoggerT = logger_base<Stream, StringT>;
-    LoggerT logger(&SerialUSB1);
+    auto logger = SerialUSB1;
     void logger_begin() { SerialUSB1.begin(9600); while (!SerialUSB1) /*noop*/; }
 #else
-    using LoggerT = logger_base<Print_null<String>>;
-    Print_null<String> nullptrinter;
-    LoggerT logger(&nullprinter);
+    auto logger = Null_Print;
     void logger_begin() {}
 #endif
 
@@ -46,20 +44,20 @@ DispatchMapT dispatch_map {
 };
 
 
-simple_prop_base<int,StringT,32> foo("foo", 1, true);
+rdl::simple_prop_base<int,32> foo("foo", 1, true);
 
-simple_prop_base<float,StringT,32> bar0("bar0", 1.1, true);
-simple_prop_base<float,StringT,32> bar1("bar1", 2.2, true);
-simple_prop_base<float,StringT,32> bar2("bar2", 3.3, true);
-simple_prop_base<float,StringT,32> bar3("bar3", 4.4, true);
+rdl::simple_prop_base<float,32> bar0("bar0", 1.1, true);
+rdl::simple_prop_base<float,32> bar1("bar1", 2.2, true);
+rdl::simple_prop_base<float,32> bar2("bar2", 3.3, true);
+rdl::simple_prop_base<float,32> bar3("bar3", 4.4, true);
 
 decltype(bar0)::RootT* all_bars[] = {&bar0, &bar1, &bar2, &bar3};
 
-channel_prop_base<float, StringT, 4> bars("bar", all_bars, sizeof(all_bars));
+rdl::channel_prop_base<float, 4> bars("bar", all_bars, sizeof(all_bars));
 
 
 // The server
-using ServerT = json_server<StreamT, StreamT, DispatchMapT, StringT, 512, LoggerT>;
+using ServerT = json_server<StreamT, StreamT, DispatchMapT, 512>;
 ServerT server(Serial, Serial, dispatch_map);
 
 void setup_dispatch() {
@@ -75,7 +73,7 @@ void setup() {
         ; // wait for serial port to connect. Needed for native USB port only
     }
     logger_begin();
-    server.logger(logger);
+    server.logger(&logger);
     logger.println("log started for ArduinoCoreTestFirmware");
 
     setup_dispatch();

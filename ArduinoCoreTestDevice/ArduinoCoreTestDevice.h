@@ -19,18 +19,18 @@
 #define NOMINMAX
 //#include <map>
 #include "DeviceBase.h"
-#include <DeviceProp.h>
-#include <DevicePropHelpers.h>
-#include <JsonDelegate.h>
-#include <JsonDispatch.h>
-#include <LocalProp.h>
-#include <RemoteProp.h>
+#include <rdlmm/DeviceProp.h>
+#include <rdlmm/DevicePropHelpers.h>
+#include <rdl/JsonDelegate.h>
+#include <rdl/JsonDispatch.h>
+#include <rdlmm/LocalProp.h>
+#include <rdlmm/RemoteProp.h>
 #include <Stream.h> // for arduino::Stream
-#include <StreamAdapter.h>
+#include <rdlmm/Stream_HubSerial.h>
 #include <string>
-#include <Logger.h>
+#include <rdlmm/DeviceLog.h>
 
-using namespace rdl;
+using namespace rdlmm;
 
 const char* g_deviceNameHub = "ArduinoCoreTestDevice-Hub";
 const char* g_versionProp   = "Version";
@@ -58,11 +58,10 @@ class CArduinoCoreTestDeviceHub : public HubBase<CArduinoCoreTestDeviceHub> {
     LocalProp<HubT, std::string> stringProp_;
     //LocalProp<double, HubT> doubleProp_;
 
-    using PrinterT = DeviceLog_Printer<CArduinoCoreTestDeviceHub>;
-    using LoggerT  = logger_base<std::string>;
-    using StreamAdapter = HubStreamAdapter<CArduinoCoreTestDeviceHub, arduino::Stream>;
+    using LoggerT  = rdlmm::DeviceLog_Print<HubT>;
+    using StreamAdapter = rdlmm::Stream_HubSerial<HubT>;
     friend StreamAdapter;
-    using ClientT = json_client<StreamAdapter, StreamAdapter, std::string, JSONRCP_BUFFER_SIZE, LoggerT>;
+    using ClientT = rdl::json_client<StreamAdapter, StreamAdapter,  JSONRCP_BUFFER_SIZE>;
 
  public:
     CArduinoCoreTestDeviceHub();
@@ -115,7 +114,6 @@ class CArduinoCoreTestDeviceHub : public HubBase<CArduinoCoreTestDeviceHub> {
     StreamAdapter serial_;
     ClientT client_;
 
-    PrinterT printer_;
     LoggerT logger_;
 };
 
