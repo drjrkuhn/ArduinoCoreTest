@@ -50,7 +50,7 @@ int main()
 		core.loadDevice(portLabel.c_str(), "SerialManager", portOutput.c_str());
 		//cout << "Fast USB to Serial was: " << core.getProperty(portLabel.c_str(), "Fast USB to Serial") << endl;
 		core.setProperty(portLabel.c_str(), "Fast USB to Serial", "Enable");
-		core.setProperty(portLabel.c_str(), "Verbose", "1");
+		core.setProperty(portLabel.c_str(), "Verbose", "0");
 		core.initializeDevice(portLabel.c_str());
 		// Initialize the device and set the serial port
 		core.loadDevice(hubLabel.c_str(), moduleName.c_str(), deviceName.c_str());

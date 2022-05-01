@@ -12,20 +12,22 @@
 //
 //
 
+#define JSONRPC_DEBUG_CLIENTSERVER 1
+
 #include "ArduinoCoreTestDevice.h"
+#include <ArduinoJson.hpp>
+#include <Common.h>
+#include <ModuleInterface.h>
+#include <cstdio>
+#include <iostream>
+#include <rdl/JsonDelegate.h>
+#include <rdl/JsonDispatch.h>
+#include <rdl/Logger.h>
+#include <rdl/SlipInPlace.h>
 #include <rdlmm/DeviceError.h>
 #include <rdlmm/DeviceProp.h>
 #include <rdlmm/DevicePropHelpers.h>
 #include <rdlmm/LocalProp.h>
-#include <ModuleInterface.h>
-#include <rdl/Logger.h>
-#include <ArduinoJson.hpp>
-#include <Common.h>
-#include <rdl/JsonDelegate.h>
-#include <rdl/JsonDispatch.h>
-#include <rdl/SlipInPlace.h>
-#include <cstdio>
-#include <iostream>
 #include <sstream>
 
 #ifdef WIN32
@@ -41,10 +43,9 @@ namespace json = ARDUINOJSON_NAMESPACE;
 
 const char* g_DeviceNameArduinoCoreTestDeviceHub = "ArduinoCoreTestDevice-Hub";
 
-// Global info about the state of the ArduinoCoreTestDevice.  This should be
-// folded into a class
-const int g_Min_MMVersion        = 1;
-const int g_Max_MMVersion        = 2;
+const char* g_FirmwareName       = "MM-Ardulingua";
+const int g_MinFirmwareVersion   = 1;
+const int g_MaxFirmwareVersion   = 2;
 const char* g_KeywordTest        = "Test";
 const char* g_TestResultsUnknown = "Not Run";
 const char* g_TestResultsRun     = "Run";
@@ -87,11 +88,9 @@ CArduinoCoreTestDeviceHub::CArduinoCoreTestDeviceHub()
     serial_.setTimeout(5000);
 
     InitializeDefaultErrorMessages();
-    rdlmm::initCommonErrors("ArduinoCoreTestDevice", 1, [this](int err, const char* txt) {
-        SetErrorText(err, txt);
-    });
+    rdlmm::InitCommonErrors(this, g_FirmwareName, g_MinFirmwareVersion);
 
-    logger_  = LoggerT(this, true);
+    logger_ = LoggerT(this, true);
     client_.logger(&logger_);
 
     port_.create(this, g_infoPort);
@@ -233,10 +232,16 @@ int CArduinoCoreTestDeviceHub::Initialize() {
     int ret = GetControllerVersion(version_);
     if (DEVICE_OK != ret) return ret;
 
-    if (version_ < g_Min_MMVersion || version_ > g_Max_MMVersion)
+    if (version_ < g_MinFirmwareVersion || version_ > g_MaxFirmwareVersion)
         return ERR_VERSION_MISMATCH;
 
     ret = foo_.create(this, &client_, g_infoFoo);
+    if (DEVICE_OK != ret) return ret;
+
+    ret = barA_.create(this, &client_, g_infoBarA, 0);
+    if (DEVICE_OK != ret) return ret;
+
+    ret = barB_.create(this, &client_, g_infoBarB, 1);
     if (DEVICE_OK != ret) return ret;
 
     CPropertyAction* pAct =
@@ -339,6 +344,10 @@ int CArduinoCoreTestDeviceHub::OnTest(MM::PropertyBase* pProp,
                 cout << "Version call error " << ret << ": " << text << endl;
             }
 
+            long ival;
+            SetProperty(foo_.name().c_str(), "100");
+            GetProperty(foo_.name().c_str(), ival);
+
             ClearPropertySequence(foo_.name().c_str());
             for (long seq = 0; seq < 12; seq++) {
                 std::string seqstr = ToString(seq);
@@ -347,6 +356,21 @@ int CArduinoCoreTestDeviceHub::OnTest(MM::PropertyBase* pProp,
             SendPropertySequence(foo_.name().c_str());
             StartPropertySequence(foo_.name().c_str());
             StopPropertySequence(foo_.name().c_str());
+
+            SetProperty(barA_.name().c_str(), "4.5678901");
+            SetProperty(barA_.name().c_str(), "5.6789012");
+            SetProperty(barA_.name().c_str(), "6.7890123");
+            double dval;
+            GetProperty(barA_.name().c_str(), dval);
+            ClearPropertySequence(barA_.name().c_str());
+            for (long seq = 0; seq < 12; seq++) {
+                dval        = 10.0 * (seq / 11.0);
+                std::string seqstr = ToString(dval);
+                AddToPropertySequence(barA_.name().c_str(), seqstr.c_str());
+            }
+            SendPropertySequence(barA_.name().c_str());
+            StartPropertySequence(barA_.name().c_str());
+            StopPropertySequence(barA_.name().c_str());
 
             cout << "=== TESTING DONE ===" << endl;
             testPassed = true;

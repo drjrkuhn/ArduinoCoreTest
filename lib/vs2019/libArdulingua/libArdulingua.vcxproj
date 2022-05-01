@@ -23,6 +23,7 @@
     <ClInclude Include="..\..\Ardulingua\src\rdl\Delegate.h" />
     <ClInclude Include="..\..\Ardulingua\src\rdl\JsonDelegate.h" />
     <ClInclude Include="..\..\Ardulingua\src\rdl\JsonDispatch.h" />
+    <ClInclude Include="..\..\Ardulingua\src\rdl\JsonError.h" />
     <ClInclude Include="..\..\Ardulingua\src\rdl\Logger.h" />
     <ClInclude Include="..\..\Ardulingua\src\rdl\Polyfills\Printable_Mock.h" />
     <ClInclude Include="..\..\Ardulingua\src\rdl\Polyfills\Print_Mock.h" />

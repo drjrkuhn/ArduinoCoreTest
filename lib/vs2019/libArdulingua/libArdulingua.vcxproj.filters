@@ -12,88 +12,100 @@
     <Filter Include="Header Files">
       <UniqueIdentifier>{3e69e796-c7e6-4895-a8aa-9b7012b10221}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\rdl">
+      <UniqueIdentifier>{5622a348-ef7a-4364-a283-d5194deff227}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\rdlmm">
+      <UniqueIdentifier>{4f7c8726-409f-418c-9fc6-55c97c78d1f0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\rdl\Polyfills">
+      <UniqueIdentifier>{89107314-d54c-43db-9e88-3c61d0dd2fd5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\Ardulingua\src\rdl\Common.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Ardulingua\src\rdl\Delegate.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Ardulingua\src\rdl\JsonDelegate.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Ardulingua\src\rdl\JsonDispatch.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Ardulingua\src\rdl\Logger.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Ardulingua\src\rdl\Polyfills\Printable_Mock.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Ardulingua\src\rdl\Polyfills\Print_Mock.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Ardulingua\src\rdl\Polyfills\Print_MockHelp.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Ardulingua\src\rdl\Polyfills\Print_MockIOS.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Ardulingua\src\rdl\Polyfills\Stream_Mock.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Ardulingua\src\rdl\Polyfills\Stream_MockIOS.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Ardulingua\src\rdl\ServerProperty.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Ardulingua\src\rdl\SlipInPlace.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Ardulingua\src\rdl\std_type_traits.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Ardulingua\src\rdl\std_utility.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Ardulingua\src\rdl\sys_PrintT.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Ardulingua\src\rdl\sys_StreamT.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Ardulingua\src\rdl\sys_StringT.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Ardulingua\src\rdl\sys_timing.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Ardulingua\src\rdlmm\DeviceError.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Ardulingua\src\rdlmm\DeviceProp.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Ardulingua\src\rdlmm\DevicePropHelpers.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Ardulingua\src\rdlmm\LocalProp.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Ardulingua\src\rdlmm\PropInfo.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Ardulingua\src\rdlmm\RemoteProp.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Ardulingua\src\rdlmm\Stream_HubSerial.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\rdlmm</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Ardulingua\src\rdlmm\DeviceLog.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\rdlmm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Ardulingua\src\rdlmm\DeviceProp.h">
+      <Filter>Header Files\rdlmm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Ardulingua\src\rdlmm\DevicePropHelpers.h">
+      <Filter>Header Files\rdlmm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Ardulingua\src\rdlmm\LocalProp.h">
+      <Filter>Header Files\rdlmm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Ardulingua\src\rdlmm\PropInfo.h">
+      <Filter>Header Files\rdlmm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Ardulingua\src\rdl\Polyfills\Print_Mock.h">
+      <Filter>Header Files\rdl\Polyfills</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Ardulingua\src\rdl\Polyfills\Print_MockHelp.h">
+      <Filter>Header Files\rdl\Polyfills</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Ardulingua\src\rdl\Polyfills\Print_MockIOS.h">
+      <Filter>Header Files\rdl\Polyfills</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Ardulingua\src\rdl\Polyfills\Printable_Mock.h">
+      <Filter>Header Files\rdl\Polyfills</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Ardulingua\src\rdl\Polyfills\Stream_Mock.h">
+      <Filter>Header Files\rdl\Polyfills</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Ardulingua\src\rdl\Polyfills\Stream_MockIOS.h">
+      <Filter>Header Files\rdl\Polyfills</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Ardulingua\src\rdlmm\Stream_HubSerial.h">
+      <Filter>Header Files\rdlmm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Ardulingua\src\rdlmm\RemoteProp.h">
+      <Filter>Header Files\rdlmm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Ardulingua\src\rdl\Common.h">
+      <Filter>Header Files\rdl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Ardulingua\src\rdl\Delegate.h">
+      <Filter>Header Files\rdl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Ardulingua\src\rdl\JsonDelegate.h">
+      <Filter>Header Files\rdl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Ardulingua\src\rdl\JsonDispatch.h">
+      <Filter>Header Files\rdl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Ardulingua\src\rdl\Logger.h">
+      <Filter>Header Files\rdl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Ardulingua\src\rdl\ServerProperty.h">
+      <Filter>Header Files\rdl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Ardulingua\src\rdl\SlipInPlace.h">
+      <Filter>Header Files\rdl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Ardulingua\src\rdl\std_type_traits.h">
+      <Filter>Header Files\rdl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Ardulingua\src\rdl\std_utility.h">
+      <Filter>Header Files\rdl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Ardulingua\src\rdl\sys_PrintT.h">
+      <Filter>Header Files\rdl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Ardulingua\src\rdl\sys_StreamT.h">
+      <Filter>Header Files\rdl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Ardulingua\src\rdl\sys_StringT.h">
+      <Filter>Header Files\rdl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Ardulingua\src\rdl\sys_timing.h">
+      <Filter>Header Files\rdl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Ardulingua\src\rdl\JsonError.h">
+      <Filter>Header Files\rdl</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

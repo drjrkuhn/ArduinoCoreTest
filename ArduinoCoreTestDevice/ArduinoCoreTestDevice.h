@@ -19,16 +19,16 @@
 #define NOMINMAX
 //#include <map>
 #include "DeviceBase.h"
-#include <rdlmm/DeviceProp.h>
-#include <rdlmm/DevicePropHelpers.h>
+#include <Stream.h> // for arduino::Stream
 #include <rdl/JsonDelegate.h>
 #include <rdl/JsonDispatch.h>
+#include <rdlmm/DeviceLog.h>
+#include <rdlmm/DeviceProp.h>
+#include <rdlmm/DevicePropHelpers.h>
 #include <rdlmm/LocalProp.h>
 #include <rdlmm/RemoteProp.h>
-#include <Stream.h> // for arduino::Stream
 #include <rdlmm/Stream_HubSerial.h>
 #include <string>
-#include <rdlmm/DeviceLog.h>
 
 using namespace rdlmm;
 
@@ -41,7 +41,9 @@ const char* g_stringProp = "stringProp";
 //const char* g_doubleProp = "doubleProp";
 
 const auto g_infoPort     = PropInfo<std::string>::build(MM::g_Keyword_Port, "Undefined").preInit();
-const auto g_infoFoo      = PropInfo<long>::build("foo").withBrief("foo").sequencable();
+const auto g_infoFoo      = PropInfo<long>::build("foo").withBrief("foo").sequencable().volatileValue();
+const auto g_infoBarA      = PropInfo<double>::build("barA").withBrief("bar").sequencable().volatileValue();
+const auto g_infoBarB      = PropInfo<double>::build("barB").withBrief("bar").sequencable().volatileValue();
 const auto g_infoVersion  = PropInfo<long>::build(g_versionProp, 0);
 const auto g_infoIntProp  = PropInfo<int>::build(g_intProp, 100);
 const auto g_infoLongProp = PropInfo<long>::build(g_longProp, 100000);
@@ -51,17 +53,18 @@ class CArduinoCoreTestDeviceHub : public HubBase<CArduinoCoreTestDeviceHub> {
  protected:
     using HubT = CArduinoCoreTestDeviceHub;
     LocalProp<HubT, std::string> port_;
-    SimpleRemnoteProp<HubT, long> foo_;
+    RemoteSimpleProp<HubT, long> foo_;
+    RemoteChannelProp<HubT, double> barA_;
+    RemoteChannelProp<HubT, double> barB_;
     LocalProp<HubT, long> versionProp_;
     LocalProp<HubT, int> intProp_;
     LocalProp<HubT, long> longProp_;
     LocalProp<HubT, std::string> stringProp_;
     //LocalProp<double, HubT> doubleProp_;
 
-    using LoggerT  = rdlmm::DeviceLog_Print<HubT>;
-    using StreamAdapter = rdlmm::Stream_HubSerial<HubT>;
-    friend StreamAdapter;
-    using ClientT = rdl::json_client<StreamAdapter, StreamAdapter,  JSONRCP_BUFFER_SIZE>;
+    using LoggerT       = rdlmm::DeviceLog_Print<HubT>;
+    using SerialStreamT = rdlmm::Stream_HubSerial<HubT>;
+    using ClientT       = rdl::json_client<JSONRCP_BUFFER_SIZE>;
 
  public:
     CArduinoCoreTestDeviceHub();
@@ -95,7 +98,8 @@ class CArduinoCoreTestDeviceHub : public HubBase<CArduinoCoreTestDeviceHub> {
     static MMThreadLock& GetLock() { return lock_; }
 
     bool port(const std::string& portname) {
-        return port_.SetProperty(portname) == DEVICE_OK;
+        int ret = port_.SetProperty(portname);
+        return ret;
     }
 
     const std::string port() {
@@ -111,7 +115,8 @@ class CArduinoCoreTestDeviceHub : public HubBase<CArduinoCoreTestDeviceHub> {
     bool portAvailable_;
     int version_;
     static MMThreadLock lock_;
-    StreamAdapter serial_;
+    //StreamAdapter serial_;
+    SerialStreamT serial_;
     ClientT client_;
 
     LoggerT logger_;
